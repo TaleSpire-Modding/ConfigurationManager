@@ -23,6 +23,7 @@ namespace ConfigurationManager.Patches.UI
         private static GameObject SectionHeader;
 
         private static GameObject KeybindTemplate;
+        private static Vector3 pos;
 
 
         private static void AddButton(UI_SwitchButtonGroup __instance, int i, Button template, string key, ref List<Button> ____buttons, float distance)
@@ -52,7 +53,7 @@ namespace ConfigurationManager.Patches.UI
         {
             content.transform.SetPositionAndRotation(original.transform.position,original.transform.rotation);
             var t = content.transform.GetComponent<RectTransform>();
-            t.sizeDelta = new Vector2(0,1993f);
+            t.sizeDelta = new Vector2(0,-pos.y);
 
             var setting = clone.transform.parent.parent.parent.gameObject.GetComponent<GameSettings>();
             setting.SwitchTab(3);
@@ -94,7 +95,7 @@ namespace ConfigurationManager.Patches.UI
 
             var title = content.transform.GetChild(0);
             var sampleText = title.GetChild(0);
-            var pos = sampleText.position;
+            pos = sampleText.position;
             var rot = sampleText.rotation;
 
             ModNameHeader = title.gameObject;
@@ -133,7 +134,7 @@ namespace ConfigurationManager.Patches.UI
 
                     foreach (var entry in entries.Where(e => e.Definition.Section == section))
                     {
-                        Debug.Log($"{entry.Definition.Section}:{entry.Definition.Key}:{entry.BoxedValue}");
+                        ConfigurationManager._logger.LogInfo($"{entry.Definition.Section}:{entry.Definition.Key}:{entry.BoxedValue}");
 
                         if (entry.BoxedValue is KeyboardShortcut)
                         {
