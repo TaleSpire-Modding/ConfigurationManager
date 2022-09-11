@@ -80,7 +80,7 @@ namespace ConfigurationManager.Patches.UI
 
                 // replace old content
                 var old = scrollViewContent.GetChild(3);
-                old.parent = null;
+                old.SetParent(null);
                 Object.Destroy(old);
 
                 var distance = t2.transform.localPosition.x - template.transform.localPosition.x;
@@ -97,7 +97,7 @@ namespace ConfigurationManager.Patches.UI
         {
             original = scrollView.GetChild(0).gameObject;
             content = Object.Instantiate(original);
-            content.transform.parent = scrollView;
+            content.transform.SetParent(scrollView);
             content.name = "MOD OPTIONS";
 
             var title = content.transform.GetChild(0);
@@ -123,9 +123,9 @@ namespace ConfigurationManager.Patches.UI
 
                 var text = pluginTitle.GetChild(0);
                 text.GetComponent<TextMeshProUGUI>().text = plugin.Info.Metadata.Name;
-                pluginTitle.parent = content.transform;
+                pluginTitle.SetParent(content.transform);
                 pluginTitle.transform.DetachChildren();
-                text.parent = pluginTitle;
+                text.SetParent(pluginTitle);
                 text.SetPositionAndRotation(pos, rot);
                 pos += 53.1f * Vector3.down;
 
