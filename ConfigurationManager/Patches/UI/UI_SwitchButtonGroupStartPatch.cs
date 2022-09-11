@@ -171,7 +171,8 @@ namespace ConfigurationManager.Patches.UI
                         {
                             var gameObject = Object.Instantiate(ToggleTemplate);
                             gameObject.transform.SetParent(content.transform);
-                            gameObject.transform.localPosition = new Vector3(210, pos.y);
+                            // gameObject.transform.localPosition = new Vector3(210, pos.y);
+                            gameObject.transform.localPosition = new Vector3(5, pos.y);
                             pos += 28f * Vector3.down;
 
                             var toggleBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.ToggleBehaviour>();
