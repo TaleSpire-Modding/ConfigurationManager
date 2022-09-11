@@ -1,4 +1,4 @@
-# Configuration Manager
+# Configuration Manager (WIP)
 
 This plugin provides an update to the settings tab in TaleSpire. This allow users to update plugin configs at runtime without having to restart the entire applications.
 
