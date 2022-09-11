@@ -15,17 +15,20 @@ namespace ConfigurationManager.Patches.UI
 
     public static class UI_SwitchButtonGroupStartPatch
     {
+        // Button for Settings Switch
         internal static Button clone;
         internal static GameObject content;
         internal static GameObject original;
 
-        private static GameObject ModNameHeader;
-        private static GameObject SectionHeader;
+        // Templates for Headers
+        private static GameObject _modNameHeader;
+        private static GameObject _sectionHeader;
         
-
-        private static GameObject KeybindTemplate;
-        private static GameObject DropDownTemplate;
-        private static GameObject ToggleTemplate;
+        // Templates for Fields
+        private static GameObject _keybindTemplate;
+        private static GameObject _dropDownTemplate;
+        private static GameObject _toggleTemplate;
+        private static GameObject _textFieldTemplate;
         private static Vector3 pos;
 
 
@@ -42,21 +45,22 @@ namespace ConfigurationManager.Patches.UI
             var rot = clone.transform.rotation;
             clone.transform.SetPositionAndRotation(newPost, rot);
             clone.onClick.RemoveAllListeners();
-            clone.onClick.AddListener(click);
-            var TextOnHover = clone.gameObject.GetComponent<MouseTextOnHover>();
-            TextOnHover.mouseHoverText = "Plugin Configurations";
+            clone.onClick.AddListener(Click);
+            var textOnHover = clone.gameObject.GetComponent<MouseTextOnHover>();
+            textOnHover.mouseHoverText = "Plugin Configurations";
             clone.GetComponentsInChildren<Image>()[2].sprite = FileAccessPlugin.Image.LoadSprite("Images/Icons/plug.png");
 
-            var ScrollViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0).GetChild(2);
-            SectionHeader = ScrollViewContent.GetChild(2).GetChild(0).GetChild(0).gameObject;
-            KeybindTemplate = ScrollViewContent.GetChild(2).GetChild(0).GetChild(1).GetChild(0).gameObject;
+            var scrollViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0).GetChild(2);
+            _sectionHeader = scrollViewContent.GetChild(2).GetChild(0).GetChild(0).gameObject;
+            _keybindTemplate = scrollViewContent.GetChild(2).GetChild(0).GetChild(1).GetChild(0).gameObject;
 
             var dropdownViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0).GetChild(0);
-            ToggleTemplate = dropdownViewContent.GetChild(4).GetChild(1).gameObject;
-            DropDownTemplate = dropdownViewContent.GetChild(5).GetChild(1).gameObject;
+            _toggleTemplate = dropdownViewContent.GetChild(4).GetChild(1).gameObject;
+            _dropDownTemplate = dropdownViewContent.GetChild(5).GetChild(1).gameObject;
+            _textFieldTemplate = dropdownViewContent.GetChild(2).GetChild(2).gameObject;
         }
 
-        private static void click()
+        private static void Click()
         {
             content.transform.SetPositionAndRotation(original.transform.position,original.transform.rotation);
             var t = content.transform.GetComponent<RectTransform>();
@@ -72,27 +76,21 @@ namespace ConfigurationManager.Patches.UI
             {
                 var template = ____buttons[0];
                 var t2 = ____buttons[1];
-                var ScrollViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0);
-
+                var scrollViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0);
 
                 // replace old content
-                var old = ScrollViewContent.GetChild(3);
+                var old = scrollViewContent.GetChild(3);
                 old.parent = null;
                 Object.Destroy(old);
 
                 var distance = t2.transform.localPosition.x - template.transform.localPosition.x;
                 AddButton(__instance,3,template,"Mod Config",ref ____buttons,distance);
-                AddContent(ScrollViewContent, plugins);
+                AddContent(scrollViewContent, plugins);
 
                 // Clear added config's orange background
                 t2.onClick.Invoke();
                 template.onClick.Invoke();
             }
-        }
-
-        private static void LoadContent()
-        {
-
         }
 
         private static void AddContent(Transform scrollView, BaseUnityPlugin[] plugins)
@@ -107,7 +105,7 @@ namespace ConfigurationManager.Patches.UI
             pos = sampleText.position;
             var rot = sampleText.rotation;
 
-            ModNameHeader = title.gameObject;
+            _modNameHeader = title.gameObject;
             
             content.transform.DetachChildren();
             
@@ -119,7 +117,7 @@ namespace ConfigurationManager.Patches.UI
 
                 if (!entries.Any()) continue;
 
-                var pluginTitle = Object.Instantiate(ModNameHeader).transform;
+                var pluginTitle = Object.Instantiate(_modNameHeader).transform;
                 pluginTitle.gameObject.name = plugin.Info.Metadata.Name;
 
 
@@ -133,7 +131,7 @@ namespace ConfigurationManager.Patches.UI
 
                 foreach (var section in sections)
                 {
-                    var header = Object.Instantiate(SectionHeader);
+                    var header = Object.Instantiate(_sectionHeader);
                     header.transform.SetParent(content.transform);
                     header.transform.localPosition = new Vector3(0, pos.y);
                     header.GetComponent<TextMeshProUGUI>().text = section;
@@ -148,7 +146,7 @@ namespace ConfigurationManager.Patches.UI
 
                         if (entry.BoxedValue is KeyboardShortcut || entry.BoxedValue is KeyCode)
                         {
-                            var gameObject = Object.Instantiate(KeybindTemplate);
+                            var gameObject = Object.Instantiate(_keybindTemplate);
                             gameObject.transform.SetParent(content.transform);
                             gameObject.transform.localPosition = new Vector3(20, pos.y);
                             pos += 28f * Vector3.down;
@@ -159,19 +157,30 @@ namespace ConfigurationManager.Patches.UI
                         }
                         else if (Utils.IsNumber(entry.BoxedValue))
                         {
-                            //TODO
-                            // pos += 28f * Vector3.down;
+                            var gameObject = Object.Instantiate(_textFieldTemplate);
+                            gameObject.transform.SetParent(content.transform);
+                            gameObject.transform.localPosition = new Vector3(20, pos.y - 36);
+                            pos += 28f * Vector3.down;
+
+                            var toggleBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.NumberBehaviour>();
+                            toggleBehaviour.Entry = entry;
+                            toggleBehaviour.Setup();
                         }
                         else if (entry.BoxedValue is string)
                         {
-                            // TODO
-                            // pos += 28f * Vector3.down;
+                            var gameObject = Object.Instantiate(_textFieldTemplate);
+                            gameObject.transform.SetParent(content.transform);
+                            gameObject.transform.localPosition = new Vector3(20, pos.y - 36 );
+                            pos += 28f * Vector3.down;
+
+                            var toggleBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.TextBehaviour>();
+                            toggleBehaviour.Entry = entry;
+                            toggleBehaviour.Setup();
                         }
                         else if (entry.BoxedValue is bool)
                         {
-                            var gameObject = Object.Instantiate(ToggleTemplate);
+                            var gameObject = Object.Instantiate(_toggleTemplate);
                             gameObject.transform.SetParent(content.transform);
-                            // gameObject.transform.localPosition = new Vector3(210, pos.y);
                             gameObject.transform.localPosition = new Vector3(5, pos.y);
                             pos += 28f * Vector3.down;
 
@@ -181,7 +190,7 @@ namespace ConfigurationManager.Patches.UI
                         }
                         else if (entry.BoxedValue.GetType().IsEnum)
                         {
-                            var gameObject = Object.Instantiate(DropDownTemplate);
+                            var gameObject = Object.Instantiate(_dropDownTemplate);
                             gameObject.transform.SetParent(content.transform);
                             gameObject.transform.localPosition = new Vector3(108, pos.y);
                             pos += 28f * Vector3.down;

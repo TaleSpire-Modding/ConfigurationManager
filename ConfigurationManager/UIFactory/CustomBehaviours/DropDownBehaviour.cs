@@ -49,7 +49,7 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             tmp_dropdown.onValueChanged.RemoveAllListeners();
             tmp_dropdown.onValueChanged.AddListener((int i) =>
             {
-                if (ConfigurationManager.LogLevel == ModdingUtils.LogLevel.Medium)
+                if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.Medium)
                     ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated");
                 Entry.BoxedValue = Enum.Parse(Entry.BoxedValue.GetType(), tmp_dropdown.options[i].text);
                 Attributes?.CallbackAction?.Invoke(i);

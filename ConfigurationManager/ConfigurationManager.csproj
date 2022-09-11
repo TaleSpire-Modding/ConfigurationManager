@@ -438,7 +438,6 @@
     <Compile Include="UIFactory\CustomBehaviours\SliderBehaviour.cs" />
     <Compile Include="UIFactory\CustomBehaviours\TextBehaviour.cs" />
     <Compile Include="UIFactory\CustomBehaviours\ToggleBehaviour.cs" />
-    <Compile Include="UIFactory\UIFactory.cs" />
     <Compile Include="Utilities\Utilities.cs" />
   </ItemGroup>
   <ItemGroup />
