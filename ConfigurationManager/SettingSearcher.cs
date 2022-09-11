@@ -3,10 +3,8 @@ using BepInEx;
 using BepInEx.Configuration;
 using ConfigurationManager.Utilities;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using Harmony;
 using ModdingTales;
 
 namespace ConfigurationManager
@@ -32,29 +30,6 @@ namespace ConfigurationManager
 
             plugins = Utils.FindPlugins();
             
-            /* foreach (var plugin in plugins)
-            {
-                var type = plugin.GetType();
-
-                var pluginInfo = plugin.Info.Metadata;
-
-                if (type.GetCustomAttributes(typeof(BrowsableAttribute), false).Cast<BrowsableAttribute>()
-                    .Any(x => !x.Browsable))
-                {
-                    modsWithoutSettings.Add(pluginInfo.Name);
-                    continue;
-                }
-
-                var detected = new List<ConfigEntryBase>();
-
-                detected.AddRange(GetPluginConfig(plugin));
-
-                if (!detected.Any())
-                    modsWithoutSettings.Add(pluginInfo.Name);
-
-                entries.AddRange(detected);
-            }*/
-
             results = entries.AsEnumerable();
         }
 

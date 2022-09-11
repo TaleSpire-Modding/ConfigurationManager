@@ -5,6 +5,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using ConfigurationManager.Utilities;
 using LordAshes;
+using ModdingTales;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,8 +22,10 @@ namespace ConfigurationManager.Patches.UI
 
         private static GameObject ModNameHeader;
         private static GameObject SectionHeader;
+        
 
         private static GameObject KeybindTemplate;
+        private static GameObject DropDownTempplate;
         private static Vector3 pos;
 
 
@@ -47,6 +50,9 @@ namespace ConfigurationManager.Patches.UI
             var ScrollViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0).GetChild(2);
             SectionHeader = ScrollViewContent.GetChild(2).GetChild(0).GetChild(0).gameObject;
             KeybindTemplate = ScrollViewContent.GetChild(2).GetChild(0).GetChild(1).GetChild(0).gameObject;
+
+            var dropdownViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0).GetChild(0);
+            DropDownTempplate = dropdownViewContent.GetChild(5).GetChild(1).gameObject;
         }
 
         private static void click()
@@ -90,7 +96,6 @@ namespace ConfigurationManager.Patches.UI
 
         private static void AddContent(Transform scrollView, BaseUnityPlugin[] plugins)
         {
-            Debug.Log($"Configuration Manager:{scrollView.GetChild(0).name}");
             original = scrollView.GetChild(0).gameObject;
             content = Object.Instantiate(original);
             content.transform.parent = scrollView;
@@ -137,7 +142,8 @@ namespace ConfigurationManager.Patches.UI
 
                     foreach (var entry in entries.Where(e => e.Definition.Section == section))
                     {
-                        ConfigurationManager._logger.LogInfo($"{entry.Definition.Section}:{entry.Definition.Key}:{entry.BoxedValue}");
+                        if (ConfigurationManager.LogLevel == ModdingUtils.LogLevel.All)
+                            ConfigurationManager._logger.LogInfo($"{entry.Definition.Section}:{entry.Definition.Key}:{entry.BoxedValue}");
 
                         if (entry.BoxedValue is KeyboardShortcut || entry.BoxedValue is KeyCode)
                         {
@@ -167,9 +173,15 @@ namespace ConfigurationManager.Patches.UI
                         }
                         else if (entry.BoxedValue.GetType().IsEnum)
                         {
-                            var values= Enum.GetValues(entry.BoxedValue.GetType());
-                            // TODO
-                            // pos += 28f * Vector3.down;
+                            var e = Object.Instantiate(DropDownTempplate);
+                            e.transform.SetParent(content.transform);
+                            e.transform.localPosition = new Vector3(108, pos.y);
+                            pos += 28f * Vector3.down;
+
+                            var kbh = e.AddComponent<UIFactory.CustomBehaviours.DropDownBehaviour>();
+                            kbh.Entry = entry;
+                            kbh.Setup();
+
                         }
                         else if (entry.BoxedValue is Color)
                         {
@@ -179,7 +191,7 @@ namespace ConfigurationManager.Patches.UI
                     }
                     pos += 11f * Vector3.down;
                 }
-                pos += 33.1f * Vector3.down;
+                pos += 11f * Vector3.down;
             }
         }
     }

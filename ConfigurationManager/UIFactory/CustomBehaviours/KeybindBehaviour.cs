@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using ModdingTales;
 using SRF;
 using TMPro;
 using UnityEngine;
@@ -35,7 +36,6 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             gameObject.transform.GetChild(1).GetComponent<Button>().onClick.RemoveAllListeners();
             gameObject.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(RevertToDefault);
             gameObject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = Entry.BoxedValue.ToString();
-            ConfigurationManager._logger.LogInfo(Entry.Definition.Key);
             gameObject.transform.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>().SetText(Entry.Definition.Key);
         }
 
