@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
@@ -25,7 +24,8 @@ namespace ConfigurationManager.Patches.UI
         
 
         private static GameObject KeybindTemplate;
-        private static GameObject DropDownTempplate;
+        private static GameObject DropDownTemplate;
+        private static GameObject ToggleTemplate;
         private static Vector3 pos;
 
 
@@ -52,7 +52,8 @@ namespace ConfigurationManager.Patches.UI
             KeybindTemplate = ScrollViewContent.GetChild(2).GetChild(0).GetChild(1).GetChild(0).gameObject;
 
             var dropdownViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0).GetChild(0);
-            DropDownTempplate = dropdownViewContent.GetChild(5).GetChild(1).gameObject;
+            ToggleTemplate = dropdownViewContent.GetChild(4).GetChild(1).gameObject;
+            DropDownTemplate = dropdownViewContent.GetChild(5).GetChild(1).gameObject;
         }
 
         private static void click()
@@ -147,14 +148,14 @@ namespace ConfigurationManager.Patches.UI
 
                         if (entry.BoxedValue is KeyboardShortcut || entry.BoxedValue is KeyCode)
                         {
-                            var e = Object.Instantiate(KeybindTemplate);
-                            e.transform.SetParent(content.transform);
-                            e.transform.localPosition = new Vector3(20, pos.y);
+                            var gameObject = Object.Instantiate(KeybindTemplate);
+                            gameObject.transform.SetParent(content.transform);
+                            gameObject.transform.localPosition = new Vector3(20, pos.y);
                             pos += 28f * Vector3.down;
 
-                            var kbh = e.AddComponent<UIFactory.CustomBehaviours.KeybindBehaviour>();
-                            kbh.Entry = entry;
-                            kbh.Setup();
+                            var keybindBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.KeybindBehaviour>();
+                            keybindBehaviour.Entry = entry;
+                            keybindBehaviour.Setup();
                         }
                         else if (Utils.IsNumber(entry.BoxedValue))
                         {
@@ -168,19 +169,25 @@ namespace ConfigurationManager.Patches.UI
                         }
                         else if (entry.BoxedValue is bool)
                         {
-                            // TODO
-                            // pos += 28f * Vector3.down;
+                            var gameObject = Object.Instantiate(ToggleTemplate);
+                            gameObject.transform.SetParent(content.transform);
+                            gameObject.transform.localPosition = new Vector3(210, pos.y);
+                            pos += 28f * Vector3.down;
+
+                            var toggleBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.ToggleBehaviour>();
+                            toggleBehaviour.Entry = entry;
+                            toggleBehaviour.Setup();
                         }
                         else if (entry.BoxedValue.GetType().IsEnum)
                         {
-                            var e = Object.Instantiate(DropDownTempplate);
-                            e.transform.SetParent(content.transform);
-                            e.transform.localPosition = new Vector3(108, pos.y);
+                            var gameObject = Object.Instantiate(DropDownTemplate);
+                            gameObject.transform.SetParent(content.transform);
+                            gameObject.transform.localPosition = new Vector3(108, pos.y);
                             pos += 28f * Vector3.down;
 
-                            var kbh = e.AddComponent<UIFactory.CustomBehaviours.DropDownBehaviour>();
-                            kbh.Entry = entry;
-                            kbh.Setup();
+                            var dropDownBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.DropDownBehaviour>();
+                            dropDownBehaviour.Entry = entry;
+                            dropDownBehaviour.Setup();
 
                         }
                         else if (entry.BoxedValue is Color)

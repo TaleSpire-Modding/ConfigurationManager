@@ -5,7 +5,6 @@ using ModdingTales;
 using SRF;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
@@ -53,10 +52,7 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                 if (ConfigurationManager.LogLevel == ModdingUtils.LogLevel.Medium)
                     ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated");
                 Entry.BoxedValue = Enum.Parse(Entry.BoxedValue.GetType(), tmp_dropdown.options[i].text);
-                if (Attributes?.CallbackAction != null)
-                {
-                    Attributes.CallbackAction(i);
-                }
+                Attributes?.CallbackAction?.Invoke(i);
             });
             tmp_dropdown.value = dropdownValue;
             
@@ -69,8 +65,6 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                 }
             }
         }
-
-       
 
         private void RevertToDefault()
         {
