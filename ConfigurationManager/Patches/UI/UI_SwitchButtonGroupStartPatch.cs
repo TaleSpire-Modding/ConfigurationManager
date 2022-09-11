@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
 using ConfigurationManager.Utilities;
 using LordAshes;
-using SRF;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -83,7 +83,10 @@ namespace ConfigurationManager.Patches.UI
             }
         }
 
+        private static void LoadContent()
+        {
 
+        }
 
         private static void AddContent(Transform scrollView, BaseUnityPlugin[] plugins)
         {
@@ -136,28 +139,18 @@ namespace ConfigurationManager.Patches.UI
                     {
                         ConfigurationManager._logger.LogInfo($"{entry.Definition.Section}:{entry.Definition.Key}:{entry.BoxedValue}");
 
-                        if (entry.BoxedValue is KeyboardShortcut)
+                        if (entry.BoxedValue is KeyboardShortcut || entry.BoxedValue is KeyCode)
                         {
                             var e = Object.Instantiate(KeybindTemplate);
                             e.transform.SetParent(content.transform);
                             e.transform.localPosition = new Vector3(20, pos.y);
                             pos += 28f * Vector3.down;
 
-                            e.RemoveComponentIfExists<UIKeybinding>();
-                            e.transform.GetChild(0).gameObject.RemoveComponentIfExists<UIListItemClickEvents>();
                             var kbh = e.AddComponent<UIFactory.CustomBehaviours.KeybindBehaviour>();
-
-                            e.transform.GetChild(1).GetComponent<Button>().onClick.RemoveAllListeners();
-                            e.transform.GetChild(1).GetComponent<Button>().onClick.AddListener(
-                                () =>
-                                {
-                                    entry.BoxedValue = entry.DefaultValue;
-                                    e.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = ((KeyboardShortcut)entry.BoxedValue).ToString();
-                                });
-                            e.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = ((KeyboardShortcut)entry.BoxedValue).ToString();
-                            ConfigurationManager._logger.LogInfo(entry.Definition.Key);
-                            e.transform.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>().SetText(entry.Definition.Key);
-                        } else if (Utils.IsNumber(entry.BoxedValue))
+                            kbh.Entry = entry;
+                            kbh.Setup();
+                        }
+                        else if (Utils.IsNumber(entry.BoxedValue))
                         {
                             //TODO
                             // pos += 28f * Vector3.down;
@@ -167,7 +160,18 @@ namespace ConfigurationManager.Patches.UI
                             // TODO
                             // pos += 28f * Vector3.down;
                         }
+                        else if (entry.BoxedValue is bool)
+                        {
+                            // TODO
+                            // pos += 28f * Vector3.down;
+                        }
                         else if (entry.BoxedValue.GetType().IsEnum)
+                        {
+                            var values= Enum.GetValues(entry.BoxedValue.GetType());
+                            // TODO
+                            // pos += 28f * Vector3.down;
+                        }
+                        else if (entry.BoxedValue is Color)
                         {
                             // TODO
                             // pos += 28f * Vector3.down;

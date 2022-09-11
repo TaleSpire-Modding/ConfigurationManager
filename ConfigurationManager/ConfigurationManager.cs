@@ -72,7 +72,7 @@ namespace ConfigurationManager
             var harmony = new HarmonyLib.Harmony(GUID);
             harmony.PatchAll();
 
-            ModdingUtils.Initialize(this, Logger);
+            ModdingUtils.Initialize(this, Logger, "HolloFoxes'");
         }
     }
 }
