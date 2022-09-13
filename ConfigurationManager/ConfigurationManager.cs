@@ -30,7 +30,7 @@ namespace ConfigurationManager
         /// <summary>
         /// Version constant
         /// </summary>
-        public const string Version = "0.9.1.0";
+        public const string Version = "0.9.2.0";
 
         internal static ManualLogSource _logger;
 
