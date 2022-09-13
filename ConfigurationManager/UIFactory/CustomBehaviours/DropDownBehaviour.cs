@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
-    public class DropDownBehaviour : MonoBehaviour
+    public sealed class DropDownBehaviour : MonoBehaviour
     {
         internal ConfigurationManagerAttributes Attributes;
         internal ConfigEntryBase Entry;
@@ -49,10 +49,14 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             tmp_dropdown.onValueChanged.RemoveAllListeners();
             tmp_dropdown.onValueChanged.AddListener((int i) =>
             {
-                if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.Medium)
-                    ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated");
+                if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
+                    ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} started updating");
+                
                 Entry.BoxedValue = Enum.Parse(Entry.BoxedValue.GetType(), tmp_dropdown.options[i].text);
                 Attributes?.CallbackAction?.Invoke(i);
+
+                if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
+                    ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated");
             });
             tmp_dropdown.value = dropdownValue;
             

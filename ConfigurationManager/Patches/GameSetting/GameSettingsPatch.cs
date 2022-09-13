@@ -8,7 +8,7 @@ namespace ConfigurationManager.Patches.GameSetting
 {
 
     [HarmonyPatch(typeof(GameSettings), "SwitchTab")]
-    class GameSettingsSwitchPatch
+    sealed class GameSettingsSwitchPatch
     {
         public static void Postfix(int index)
         {
@@ -21,7 +21,7 @@ namespace ConfigurationManager.Patches.GameSetting
     /// 
     /// </summary>
     [HarmonyPatch(typeof(GameSettings), "OnInstanceSetup")]
-    class GameSettingsSetupPatch
+    sealed class GameSettingsSetupPatch
     {
         internal static bool AlreadyRan;
         private static BaseUnityPlugin[] _plugins;

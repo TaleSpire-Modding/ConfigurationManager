@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 namespace ConfigurationManager.Patches.UI
 {
 
-    public static class UI_SwitchButtonGroupStartPatch
+    internal static class UI_SwitchButtonGroupStartPatch
     {
         // Button for Settings Switch
         internal static Button clone;
@@ -120,7 +120,6 @@ namespace ConfigurationManager.Patches.UI
                 var pluginTitle = Object.Instantiate(_modNameHeader).transform;
                 pluginTitle.gameObject.name = plugin.Info.Metadata.Name;
 
-
                 var text = pluginTitle.GetChild(0);
                 text.GetComponent<TextMeshProUGUI>().text = plugin.Info.Metadata.Name;
                 pluginTitle.SetParent(content.transform);
@@ -128,6 +127,8 @@ namespace ConfigurationManager.Patches.UI
                 text.SetParent(pluginTitle);
                 text.SetPositionAndRotation(pos, rot);
                 pos += 53.1f * Vector3.down;
+
+                var anchor = text.GetComponent<RectTransform>().anchoredPosition;
 
                 foreach (var section in sections)
                 {
@@ -149,33 +150,33 @@ namespace ConfigurationManager.Patches.UI
                             var gameObject = Object.Instantiate(_keybindTemplate);
                             gameObject.transform.SetParent(content.transform);
                             gameObject.transform.localPosition = new Vector3(20, pos.y);
-                            pos += 28f * Vector3.down;
-
                             var keybindBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.KeybindBehaviour>();
                             keybindBehaviour.Entry = entry;
                             keybindBehaviour.Setup();
+                            pos += 28f * Vector3.down;
                         }
                         else if (Utils.IsNumber(entry.BoxedValue))
                         {
                             var gameObject = Object.Instantiate(_textFieldTemplate);
                             gameObject.transform.SetParent(content.transform);
-                            gameObject.transform.localPosition = new Vector3(20, pos.y - 36);
-                            pos += 28f * Vector3.down;
-
+                            gameObject.transform.localPosition = new Vector3(20, pos.y - 14f);
                             var toggleBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.NumberBehaviour>();
+                            toggleBehaviour.posy = pos.y - 14f;
                             toggleBehaviour.Entry = entry;
                             toggleBehaviour.Setup();
+                            pos += 28f * Vector3.down;
                         }
                         else if (entry.BoxedValue is string)
                         {
                             var gameObject = Object.Instantiate(_textFieldTemplate);
                             gameObject.transform.SetParent(content.transform);
-                            gameObject.transform.localPosition = new Vector3(20, pos.y - 36 );
-                            pos += 28f * Vector3.down;
-
+                            gameObject.transform.localPosition = new Vector3(20, pos.y - 14f);
+                            
                             var toggleBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.TextBehaviour>();
+                            toggleBehaviour.posy = pos.y - 14f;
                             toggleBehaviour.Entry = entry;
                             toggleBehaviour.Setup();
+                            pos += 28f * Vector3.down;
                         }
                         else if (entry.BoxedValue is bool)
                         {
@@ -198,7 +199,6 @@ namespace ConfigurationManager.Patches.UI
                             var dropDownBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.DropDownBehaviour>();
                             dropDownBehaviour.Entry = entry;
                             dropDownBehaviour.Setup();
-
                         }
                         else if (entry.BoxedValue is Color)
                         {

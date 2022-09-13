@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using ModdingTales;
 using SRF;
 using TMPro;
 using UnityEngine;
@@ -6,14 +7,23 @@ using UnityEngine.UI;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
-    public class TextBehaviour : MonoBehaviour
+    public sealed class TextBehaviour : MonoBehaviour
     {
         internal ConfigurationManagerAttributes Attributes;
         internal ConfigEntryBase Entry;
+        internal float posy;
 
         private void Awake()
         {
             Setup();
+        }
+
+        private void Update()
+        {
+            if (transform.localPosition.y != posy)
+            {
+                transform.localPosition = new Vector3(20, posy);
+            }
         }
 
         internal void Setup()
@@ -44,8 +54,14 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                 SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired text", "OK",
                     (string t) =>
                     {
+                        if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
+                            ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} started updating");
+                        
                         value.text = t;
                         Entry.BoxedValue = t;
+
+                        if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
+                            ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated");
                     },null,"Cancel",null,Entry.BoxedValue.ToString());
             });
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
+using ModdingTales;
 using SRF;
 using TMPro;
 using UnityEngine;
@@ -8,14 +9,23 @@ using UnityEngine.UI;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
-    public class NumberBehaviour : MonoBehaviour
+    public sealed class NumberBehaviour : MonoBehaviour
     {
         internal ConfigurationManagerAttributes Attributes;
         internal ConfigEntryBase Entry;
+        internal float posy;
 
         private void Awake()
         {
             Setup();
+        }
+
+        private void Update()
+        {
+            if (transform.localPosition.y != posy)
+            {
+                transform.localPosition = new Vector3(20, posy);
+            }
         }
 
         internal void Setup()
@@ -60,6 +70,9 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                             {typeof(double),9},
                             {typeof(decimal),10},
                         };
+
+                        if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
+                            ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} started updating");
 
                         switch (typeDict[Entry.BoxedValue.GetType()])
                         {
@@ -109,6 +122,9 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                                 break;
                         }
                         value.text = Entry.BoxedValue.ToString();
+
+                        if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
+                            ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated");
                     }, null,"Cancel", null, Entry.BoxedValue.ToString());
             });
         }

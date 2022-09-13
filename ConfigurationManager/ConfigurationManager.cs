@@ -20,7 +20,7 @@ namespace ConfigurationManager
     [BepInDependency(FileAccessPlugin.Guid)]
     [BepInDependency(SetInjectionFlag.Guid)]
     [Browsable(false)]
-    public class ConfigurationManager : BaseUnityPlugin
+    public sealed class ConfigurationManager : BaseUnityPlugin
     {
         /// <summary>
         /// GUID of this plugin
@@ -30,7 +30,7 @@ namespace ConfigurationManager
         /// <summary>
         /// Version constant
         /// </summary>
-        public const string Version = "0.9.0.0";
+        public const string Version = "0.9.1.0";
 
         internal static ManualLogSource _logger;
 

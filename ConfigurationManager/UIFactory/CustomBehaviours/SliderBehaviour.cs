@@ -2,7 +2,7 @@
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
-    public class SliderBehaviour : MonoBehaviour
+    public sealed class SliderBehaviour : MonoBehaviour
     {
         public System.Action<object> CallbackAction;
     }

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
-    public class ToggleBehaviour : MonoBehaviour
+    public sealed class ToggleBehaviour : MonoBehaviour
     {
         internal ConfigurationManagerAttributes Attributes;
         internal ConfigEntryBase Entry;
@@ -28,10 +28,14 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             toggleref.onValueChanged.RemoveAllListeners();
             toggleref.onValueChanged.AddListener((bool b) =>
             {
-                if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.Medium)
-                    ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated to {b}");
+                if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
+                    ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} started updating");
+
                 Entry.BoxedValue = b;
                 Attributes?.CallbackAction?.Invoke(b);
+
+                if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
+                    ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated");
             });
             toggleref.isOn = (bool)Entry.BoxedValue;
 

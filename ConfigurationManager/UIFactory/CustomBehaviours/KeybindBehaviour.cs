@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
-    public class KeybindBehaviour : MonoBehaviour
+    public sealed class KeybindBehaviour : MonoBehaviour
     {
         internal ConfigurationManagerAttributes Attributes;
         internal ConfigEntryBase Entry;
