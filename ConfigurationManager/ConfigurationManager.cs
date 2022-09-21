@@ -14,10 +14,10 @@ namespace ConfigurationManager
 {
     /// <summary>
     /// An easy way to let user configure how a plugin behaves without the need to make your own GUI. The user can change any of the settings you expose, even keyboard shortcuts.
-    /// 
     /// </summary>
-    [BepInPlugin(GUID, "Config Manager", Version)]
+    [BepInPlugin(Guid, "Config Manager", Version)]
     [BepInDependency(FileAccessPlugin.Guid)]
+    [BepInDependency(ConfigEditorPlugin.Guid)]
     [BepInDependency(SetInjectionFlag.Guid)]
     [Browsable(false)]
     public sealed class ConfigurationManager : BaseUnityPlugin
@@ -25,12 +25,12 @@ namespace ConfigurationManager
         /// <summary>
         /// GUID of this plugin
         /// </summary>
-        public const string GUID = "com.hf.hollofox.configurationmanager";
+        public const string Guid = "com.hf.hollofox.configurationmanager";
 
         /// <summary>
         /// Version constant
         /// </summary>
-        public const string Version = "0.9.2.0";
+        public const string Version = "0.9.4.0";
 
         internal static ManualLogSource _logger;
 
@@ -64,12 +64,13 @@ namespace ConfigurationManager
             {
                 IsAdvanced = true
             }));
+
             // _hideSingleSection = Config.Bind("General", "Hide single sections", false, new ConfigDescription("Show section title for plugins with only one section"));
             // _pluginConfigCollapsedDefault = Config.Bind("General", "Plugin collapsed default", true, new ConfigDescription("If set to true plugins will be collapsed when opening the configuration manager window"));
             // _toolTips = Config.Bind("General", "Setting Tooltips", true, new ConfigDescription("Hovering over setting label will provide a tooltip if enabled."));
 
             // Do Patching
-            var harmony = new HarmonyLib.Harmony(GUID);
+            var harmony = new HarmonyLib.Harmony(Guid);
             harmony.PatchAll();
 
             ModdingUtils.Initialize(this, Logger, "HolloFoxes'");

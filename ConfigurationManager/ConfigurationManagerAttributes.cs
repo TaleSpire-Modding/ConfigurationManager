@@ -25,7 +25,7 @@
 /// You can optionally remove fields that you won't use from this class, it's the same as leaving them null.
 /// </remarks>
 #pragma warning disable 0169, 0414, 0649
-internal sealed class ConfigurationManagerAttributes
+public sealed class ConfigurationManagerAttributes
 {
     /// <summary>
     /// Should the setting be shown as a percentage (only use with value range settings).
@@ -90,6 +90,11 @@ internal sealed class ConfigurationManagerAttributes
     /// If true, don't show the setting by default. User has to turn on showing advanced settings or search for it.
     /// </summary>
     public bool? IsAdvanced;
+
+    /// <summary>
+    /// If true, it will pass the string to ConfigEditor instead of using Textbox.
+    /// </summary>
+    public bool? IsJSON;
 
     /// <summary>
     /// Custom converter from setting type to string for the built-in editor textboxes.

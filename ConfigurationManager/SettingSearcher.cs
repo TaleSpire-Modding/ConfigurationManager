@@ -52,7 +52,7 @@ namespace ConfigurationManager
                     break;
                 }
             }
-            return coreConfig.GetConfigEntries();
+            return coreConfig.ToArray().Select(c => c.Value);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace ConfigurationManager
 
             if (ConfigurationManager.LogLevel != ModdingUtils.LogLevel.None)
                 ConfigurationManager._logger.LogInfo(plugin);
-            return plugin.Config.GetConfigEntries();
+            return plugin.Config.ToArray().Select(c => c.Value);
         }
     }
 }
