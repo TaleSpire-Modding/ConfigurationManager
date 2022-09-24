@@ -6,9 +6,11 @@ using System.ComponentModel;
 using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Configuration;
+using ConfigurationManager.Patches.GameSetting;
 using LordAshes;
 using ModdingTales;
 using PluginUtilities;
+using UnityEngine.SceneManagement;
 
 namespace ConfigurationManager
 {
@@ -30,7 +32,7 @@ namespace ConfigurationManager
         /// <summary>
         /// Version constant
         /// </summary>
-        public const string Version = "0.9.4.0";
+        public const string Version = "0.9.5.0";
 
         internal static ManualLogSource _logger;
 
@@ -74,6 +76,12 @@ namespace ConfigurationManager
             harmony.PatchAll();
 
             ModdingUtils.Initialize(this, Logger, "HolloFoxes'");
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        public static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            GameSettingsSetupPatch.AlreadyRan = false;
         }
     }
 }

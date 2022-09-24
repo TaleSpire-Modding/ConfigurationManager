@@ -17,7 +17,7 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
         {
             Setup();
         }
-
+        
         internal void Setup()
         {
             if (Entry == null) return;
