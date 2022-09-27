@@ -21,7 +21,6 @@ namespace ConfigurationManager
     [BepInDependency(FileAccessPlugin.Guid)]
     [BepInDependency(ConfigEditorPlugin.Guid)]
     [BepInDependency(SetInjectionFlag.Guid)]
-    [Browsable(false)]
     public sealed class ConfigurationManager : BaseUnityPlugin
     {
         /// <summary>
