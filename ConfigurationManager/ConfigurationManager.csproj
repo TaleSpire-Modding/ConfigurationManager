@@ -155,6 +155,48 @@
     <Reference Include="Sentry">
       <HintPath>Sentry\Sentry.dll</HintPath>
     </Reference>
+    <Reference Include="Sentry.Microsoft.Bcl.AsyncInterfaces">
+      <HintPath>Sentry\Sentry.Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.System.Buffers">
+      <HintPath>Sentry\Sentry.System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.System.Collections.Immutable">
+      <HintPath>Sentry\Sentry.System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.System.Memory">
+      <HintPath>Sentry\Sentry.System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.System.Numerics.Vectors">
+      <HintPath>Sentry\Sentry.System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.System.Reflection.Metadata">
+      <HintPath>Sentry\Sentry.System.Reflection.Metadata.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.System.Runtime.CompilerServices.Unsafe">
+      <HintPath>Sentry\Sentry.System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.System.Text.Encodings.Web">
+      <HintPath>Sentry\Sentry.System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.System.Text.Json">
+      <HintPath>Sentry\Sentry.System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.System.Threading.Tasks.Extensions">
+      <HintPath>Sentry\Sentry.System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.Unity">
+      <HintPath>Sentry\Sentry.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.Unity.Android">
+      <HintPath>Sentry\Sentry.Unity.Android.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.Unity.iOS">
+      <HintPath>Sentry\Sentry.Unity.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Sentry.Unity.Native">
+      <HintPath>Sentry\Sentry.Unity.Native.dll</HintPath>
+    </Reference>
     <Reference Include="SetInjectionFlagPlugin">
       <HintPath>..\..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\TaleSpire\profiles\CMPDev\BepInEx\plugins\brcoding-SetInjectionFlagPlugin\SetInjectionFlagPlugin.dll</HintPath>
       <Private>False</Private>
@@ -631,6 +673,9 @@
       <HintPath>..\..\automationdlls\TaleSpireDlls\UnityEngine.XRModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

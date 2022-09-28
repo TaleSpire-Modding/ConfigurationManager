@@ -3,6 +3,8 @@ using BepInEx;
 using ConfigurationManager.Patches.UI;
 using HarmonyLib;
 using ModdingTales;
+using Sentry;
+using static ConfigurationManager.ConfigurationManager;
 
 namespace ConfigurationManager.Patches.GameSetting
 {
@@ -12,8 +14,8 @@ namespace ConfigurationManager.Patches.GameSetting
     {
         public static void Postfix(int index)
         {
-            if (ConfigurationManager.LogLevel == ModdingUtils.LogLevel.All)
-                ConfigurationManager._logger.LogInfo($"switching to tab: {index}");
+            if (LogLevel == ModdingUtils.LogLevel.All)
+                _logger.LogInfo($"switching to tab: {index}");
         }
     }
 
@@ -28,35 +30,51 @@ namespace ConfigurationManager.Patches.GameSetting
 
         public static void Postfix()
         {
-            if (ConfigurationManager.LogLevel == ModdingUtils.LogLevel.All)
-                ConfigurationManager._logger.LogInfo($"GameSettings.OnInstanceSetup: {AlreadyRan}");
+            if (useSentry > logToSentry.Disabled)
+            {
+                using (SentrySdk.Init(_sentryOptions))
+                {
+                    Do();
+                }
+            }
+            else
+            {
+                Do();
+            }
+        }
+
+        private static void Do()
+        {
+            if (LogLevel == ModdingUtils.LogLevel.All)
+                _logger.LogInfo($"GameSettings.OnInstanceSetup: {AlreadyRan}");
             if (AlreadyRan) return;
 
             // Collect all settings
             SettingSearcher.CollectSettings(out var results, out var modsWithoutSettings, out _plugins);
-            
+
             // Log detail if logging all
-            if (ConfigurationManager.LogLevel == ModdingUtils.LogLevel.All)
+            if (LogLevel == ModdingUtils.LogLevel.All)
             {
                 foreach (var entry in results)
-                    ConfigurationManager._logger.LogInfo($"Settings Found: {entry.Definition.Section}, {entry.Definition.Key} ");
-                
+                    _logger.LogInfo($"Settings Found: {entry.Definition.Section}, {entry.Definition.Key} ");
+
                 foreach (var plugin in _plugins)
                     foreach (var entry in SettingSearcher.GetPluginConfig(plugin))
-                        ConfigurationManager._logger.LogInfo($"Settings Found in {plugin.Info.Metadata.Name} : {entry.Definition.Section}, {entry.Definition.Key} ");
+                        _logger.LogInfo($"Settings Found in {plugin.Info.Metadata.Name} : {entry.Definition.Section}, {entry.Definition.Key} ");
             }
 
             // Start by adding new tab
             var go = SingletonBehaviour<GameSettings>.Instance.gameObject;
             var btnGroup = go.GetComponentInChildren<UI_SwitchButtonGroup>();
             var buttons = btnGroup.gameObject.GetComponentsInChildren<UnityEngine.UI.Button>().ToList();
-            UI_SwitchButtonGroupStartPatch.Postfix(btnGroup,ref buttons, _plugins);
+            UI_SwitchButtonGroupStartPatch.Postfix(btnGroup, ref buttons, _plugins);
 
             // Populate post setup
-            if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.Medium)
-                ConfigurationManager._logger.LogInfo("GameSettings SetUp Patch completed");
+            if (LogLevel >= ModdingUtils.LogLevel.Medium)
+                    _logger.LogInfo("GameSettings SetUp Patch completed");
 
             AlreadyRan = true;
         }
+
     }
 }
