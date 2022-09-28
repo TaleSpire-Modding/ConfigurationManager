@@ -3,20 +3,39 @@
 
 using BepInEx;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using BepInEx.Logging;
-using UnityEngine;
 using Object = UnityEngine.Object;
+using Sentry;
+using static ConfigurationManager.ConfigurationManager;
 
 namespace ConfigurationManager.Utilities
 {
     internal static class Utils
     {
+
+        public static void SentryInvoke(Action a)
+        {
+            if (useSentry > logToSentry.Disabled)
+            {
+                using (SentrySdk.Init(_sentryOptions))
+                {
+                    try
+                    {
+                        a.Invoke();
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e);
+                        throw e;
+                    }
+                }
+            }
+            else
+            {
+                a.Invoke();
+            }
+        }
+/*
         public static string ToProperCase(this string str)
         {
             if (string.IsNullOrEmpty(str)) return string.Empty;
@@ -34,7 +53,9 @@ namespace ConfigurationManager.Utilities
 
             return result;
         }
+*/
 
+/*
         /// <summary>
         ///     Return items with browsable attribute same as expectedBrowsable, and optionally items with no browsable attribute
         /// </summary>
@@ -46,7 +67,9 @@ namespace ConfigurationManager.Utilities
 
             return props.Where(p => p.GetCustomAttributes(typeof(BrowsableAttribute), false).Cast<BrowsableAttribute>().Any(x => x.Browsable == expectedBrowsable));
         }
+*/
 
+/*
         public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic)
         {
             while (toCheck != null && toCheck != typeof(object))
@@ -58,6 +81,7 @@ namespace ConfigurationManager.Utilities
             }
             return false;
         }
+*/
 
         // Additionally search for BaseUnityPlugin to find dynamically loaded plugins
         public static BaseUnityPlugin[] FindPlugins() => BepInEx.Bootstrap.Chainloader.Plugins.Concat(Object.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>()).Distinct().ToArray();
@@ -74,16 +98,21 @@ namespace ConfigurationManager.Utilities
                    || value is double
                    || value is decimal;
 
+/*
         public static string AppendZero(this string s)
         {
             return !s.Contains(".") ? s + ".0" : s;
         }
+*/
 
+/*
         public static string AppendZeroIfFloat(this string s, Type type)
         {
             return type == typeof(float) || type == typeof(double) || type == typeof(decimal) ? s.AppendZero() : s;
         }
+*/
 
+/*
         public static void FillTexture(this Texture2D tex, Color color)
         {
             for (var x = 0; x < tex.width; x++)
@@ -92,7 +121,9 @@ namespace ConfigurationManager.Utilities
 
             tex.Apply(false);
         }
+*/
 
+/*
         public static void OpenLog()
         {
             bool TryOpen(string path)
@@ -145,7 +176,9 @@ namespace ConfigurationManager.Utilities
 
             throw new FileNotFoundException("No log files were found");
         }
+*/
 
+/*
         public static string GetWebsite(BaseUnityPlugin bepInPlugin)
         {
             try
@@ -168,7 +201,9 @@ namespace ConfigurationManager.Utilities
                 return null;
             }
         }
+*/
 
+/*
         public static void OpenWebsite(string url)
         {
             try
@@ -181,5 +216,6 @@ namespace ConfigurationManager.Utilities
                 ConfigurationManager._logger.Log(LogLevel.Message | LogLevel.Warning, $"Failed to open URL {url}\nCause: {ex.Message}");
             }
         }
+*/
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using BepInEx;
 using ConfigurationManager.Patches.UI;
+using ConfigurationManager.Utilities;
 using HarmonyLib;
 using ModdingTales;
 using Sentry;
@@ -30,20 +31,10 @@ namespace ConfigurationManager.Patches.GameSetting
 
         public static void Postfix()
         {
-            if (useSentry > logToSentry.Disabled)
-            {
-                using (SentrySdk.Init(_sentryOptions))
-                {
-                    Do();
-                }
-            }
-            else
-            {
-                Do();
-            }
+            Utils.SentryInvoke(Setup);
         }
 
-        private static void Do()
+        private static void Setup()
         {
             if (LogLevel == ModdingUtils.LogLevel.All)
                 _logger.LogInfo($"GameSettings.OnInstanceSetup: {AlreadyRan}");

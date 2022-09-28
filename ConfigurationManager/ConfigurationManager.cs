@@ -6,6 +6,7 @@ using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Configuration;
 using ConfigurationManager.Patches.GameSetting;
+using ConfigurationManager.Utilities;
 using LordAshes;
 using ModdingTales;
 using PluginUtilities;
@@ -36,6 +37,7 @@ namespace ConfigurationManager
         internal static ManualLogSource _logger;
         internal static ConfigurationManager _instance;
         internal static SentryOptions _sentryOptions;
+        internal static Action<Scope> _scope;
 
         public enum logToSentry
         {
@@ -51,33 +53,29 @@ namespace ConfigurationManager
         internal static ModdingUtils.LogLevel LogLevel => _instance._logLevel.Value == ModdingUtils.LogLevel.Inherited ? ModdingUtils.LogLevelConfig.Value : _instance._logLevel.Value;
         internal static logToSentry useSentry => _instance._useSentry.Value;
 
-        private bool _showDebug;
-
         /// <inheritdoc />
         public ConfigurationManager()
         {
             _instance = this;
-            _useSentry = Config.Bind("Filtering", "Send to Dashboard", logToSentry.Enabled);
+            _useSentry = Config.Bind("Filtering", "Send to Dashboard", logToSentry.Disabled);
             _sentryOptions = new SentryOptions()
             {
                 // Tells which project in Sentry to send events to:
-                Dsn = "",
+                Dsn = "https://77b85586308d445184b518ccab1542cb@o1208746.ingest.sentry.io/6778961",
                 Debug = true,
-                TracesSampleRate = 1.0,
-                IsGlobalModeEnabled = true
+                TracesSampleRate = 0.2,
+                IsGlobalModeEnabled = true,
+                AttachStacktrace = true,
             };
-
-            if (useSentry > logToSentry.Disabled)
-            {
-                using (SentrySdk.Init(_sentryOptions))
+            _scope = (scope) =>
                 {
-                    Setup();
-                }
-            }
-            else
-            {
-                Setup();
-            }
+                    scope.User = new User
+                    {
+                        Username = BackendManager.Username,
+                    };
+                };
+
+            Utils.SentryInvoke(Setup);
         }
 
         private void Setup()
@@ -87,7 +85,7 @@ namespace ConfigurationManager
                 IsAdvanced = true
             }));
 
-            _logger = this.Logger;
+            _logger = Logger;
             _logger.LogEvent += logFowarding;
 
             // Do Patching
@@ -119,8 +117,6 @@ namespace ConfigurationManager
                 case logToSentry.Enabled:
                     relay(o,e);
                     break;
-                default:
-                    break;
             }
         }
 
@@ -128,32 +124,14 @@ namespace ConfigurationManager
         {
             switch (e.Level)
             {
-                case BepInEx.Logging.LogLevel.None:
-                    SentrySdk.CaptureMessage(e.Data.ToString());
-                    break;
                 case BepInEx.Logging.LogLevel.Fatal:
-                    SentrySdk.CaptureMessage(e.Data.ToString(), SentryLevel.Fatal);
+                    SentrySdk.CaptureMessage(e.Data.ToString(),_scope, SentryLevel.Fatal);
                     break;
                 case BepInEx.Logging.LogLevel.Error:
-                    SentrySdk.CaptureMessage(e.Data.ToString(), SentryLevel.Error);
-                    break;
-                case BepInEx.Logging.LogLevel.Warning:
-                    SentrySdk.CaptureMessage(e.Data.ToString(), SentryLevel.Warning);
-                    break;
-                case BepInEx.Logging.LogLevel.Message:
-                    SentrySdk.CaptureMessage(e.Data.ToString());
-                    break;
-                case BepInEx.Logging.LogLevel.Info:
-                    SentrySdk.CaptureMessage(e.Data.ToString());
-                    break;
-                case BepInEx.Logging.LogLevel.Debug:
-                    SentrySdk.CaptureMessage(e.Data.ToString(), SentryLevel.Debug);
-                    break;
-                case BepInEx.Logging.LogLevel.All:
-                    SentrySdk.CaptureMessage(e.Data.ToString());
+                    SentrySdk.CaptureMessage(e.Data.ToString(), _scope, SentryLevel.Error);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    break;
             }
         }
 

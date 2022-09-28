@@ -1,8 +1,11 @@
 ﻿using BepInEx.Configuration;
+using ConfigurationManager.Utilities;
 using ModdingTales;
+using Sentry;
 using SRF;
 using UnityEngine;
 using UnityEngine.UI;
+using static ConfigurationManager.ConfigurationManager;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
@@ -13,7 +16,7 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
         private void Awake()
         {
-            Setup();
+            Utils.SentryInvoke(Setup);
         }
 
         internal void Setup()
