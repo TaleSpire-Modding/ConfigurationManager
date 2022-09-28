@@ -85,7 +85,8 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                     {
                         SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired text",
                             "OK",
-                            (string t) => Save(t), null, "Cancel", null, Entry.BoxedValue.ToString());
+                            (string t) => { Utils.SentryInvoke(() => { Save(t); }); }, 
+                            null, "Cancel", null, Entry.BoxedValue.ToString());
                     });
                 });
             }

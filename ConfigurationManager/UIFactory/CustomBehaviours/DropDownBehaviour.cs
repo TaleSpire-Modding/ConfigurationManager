@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using BepInEx.Configuration;
 using ConfigurationManager.Utilities;
 using ModdingTales;
-using Sentry;
 using SRF;
 using TMPro;
 using UnityEngine;

@@ -32,7 +32,7 @@ namespace ConfigurationManager
         /// <summary>
         /// Version constant
         /// </summary>
-        public const string Version = "0.9.6.0";
+        public const string Version = "0.9.6.3";
 
         internal static ManualLogSource _logger;
         internal static ConfigurationManager _instance;
@@ -43,7 +43,7 @@ namespace ConfigurationManager
         {
             Inherited,
             Disabled,
-            Prompt,
+            // Prompt,
             Enabled
         }
 
@@ -57,7 +57,7 @@ namespace ConfigurationManager
         public ConfigurationManager()
         {
             _instance = this;
-            _useSentry = Config.Bind("Filtering", "Send to Dashboard", logToSentry.Disabled);
+            _useSentry = Config.Bind("Filtering", "Send Errors to Dashboard", logToSentry.Disabled);
             _sentryOptions = new SentryOptions()
             {
                 // Tells which project in Sentry to send events to:
@@ -100,20 +100,20 @@ namespace ConfigurationManager
         {
             switch (useSentry)
             {
-                case logToSentry.Prompt:
-                    SystemMessage.AskToConfirmDelete("Do you want to provide logs?", "Do you want to submit", "Opt in","Opt out", false,
-                        (t) =>
-                        {
-                            if (t)
-                            {
-                                _useSentry.Value = logToSentry.Enabled;
-                                relay(o,e);
-                            } 
-                            else
-                                _useSentry.Value = logToSentry.Disabled;
-                        }, 
-                        null,"Opt out");
-                    break;
+                // case logToSentry.Prompt:
+                //     SystemMessage.AskToConfirmDelete("Do you want to provide logs?", "Do you want to submit", "Opt in","Opt out", false,
+                //         (t) =>
+                //         {
+                //             if (t)
+                //             {
+                //                 _useSentry.Value = logToSentry.Enabled;
+                //                 relay(o,e);
+                //             } 
+                //             else
+                //                 _useSentry.Value = logToSentry.Disabled;
+                //         }, 
+                //         null,"Opt out");
+                //     break;
                 case logToSentry.Enabled:
                     relay(o,e);
                     break;
