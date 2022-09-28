@@ -1,15 +1,16 @@
 ﻿// Made by Hollo / HolloFox
 // Copyright 2022
 
-
-using System.ComponentModel;
+using System;
 using BepInEx;
 using BepInEx.Logging;
 using BepInEx.Configuration;
 using ConfigurationManager.Patches.GameSetting;
+using ConfigurationManager.Utilities;
 using LordAshes;
 using ModdingTales;
 using PluginUtilities;
+using Sentry;
 using UnityEngine.SceneManagement;
 
 namespace ConfigurationManager
@@ -21,7 +22,6 @@ namespace ConfigurationManager
     [BepInDependency(FileAccessPlugin.Guid)]
     [BepInDependency(ConfigEditorPlugin.Guid)]
     [BepInDependency(SetInjectionFlag.Guid)]
-    [Browsable(false)]
     public sealed class ConfigurationManager : BaseUnityPlugin
     {
         /// <summary>
@@ -32,44 +32,61 @@ namespace ConfigurationManager
         /// <summary>
         /// Version constant
         /// </summary>
-        public const string Version = "0.9.5.0";
+        public const string Version = "0.9.6.3";
 
         internal static ManualLogSource _logger;
-
         internal static ConfigurationManager _instance;
+        internal static SentryOptions _sentryOptions;
+        internal static Action<Scope> _scope;
 
-        // private readonly ConfigEntry<bool> _showAdvanced;
-        // private readonly ConfigEntry<bool> _showKeybinds;
-        // private readonly ConfigEntry<bool> _showSettings;
-        // private readonly ConfigEntry<bool> _hideSingleSection;
-        // private readonly ConfigEntry<bool> _pluginConfigCollapsedDefault; // Don't need right now
-        private readonly ConfigEntry<ModdingUtils.LogLevel> _logLevel;
-        // private readonly ConfigEntry<bool> _toolTips;
+        public enum logToSentry
+        {
+            Inherited,
+            Disabled,
+            // Prompt,
+            Enabled
+        }
 
+        private ConfigEntry<ModdingUtils.LogLevel> _logLevel;
+        private ConfigEntry<logToSentry> _useSentry;
+        
         internal static ModdingUtils.LogLevel LogLevel => _instance._logLevel.Value == ModdingUtils.LogLevel.Inherited ? ModdingUtils.LogLevelConfig.Value : _instance._logLevel.Value;
-
-        private bool _showDebug;
+        internal static logToSentry useSentry => _instance._useSentry.Value;
 
         /// <inheritdoc />
         public ConfigurationManager()
         {
-            _logger = base.Logger;
             _instance = this;
-            
-            // Do Config
-            /*
-            _showAdvanced = Config.Bind("Filtering", "Show advanced", false);
-            _showKeybinds = Config.Bind("Filtering", "Show keybinds", true);
-            _showSettings = Config.Bind("Filtering", "Show settings", true);
-            */
-            _logLevel = Config.Bind("Filtering", "Show Logs", ModdingUtils.LogLevel.Inherited, new ConfigDescription("",null, new ConfigurationManagerAttributes
+            _useSentry = Config.Bind("Filtering", "Send Errors to Dashboard", logToSentry.Disabled);
+            _sentryOptions = new SentryOptions()
+            {
+                // Tells which project in Sentry to send events to:
+                Dsn = "https://77b85586308d445184b518ccab1542cb@o1208746.ingest.sentry.io/6778961",
+                Debug = true,
+                TracesSampleRate = 0.2,
+                IsGlobalModeEnabled = true,
+                AttachStacktrace = true,
+            };
+            _scope = (scope) =>
+                {
+                    scope.User = new User
+                    {
+                        Username = BackendManager.Username,
+                    };
+                };
+
+            Utils.SentryInvoke(Setup);
+        }
+
+        private void Setup()
+        {
+            _logLevel = Config.Bind("Filtering", "Show Logs", ModdingUtils.LogLevel.Inherited, new ConfigDescription("", null, new ConfigurationManagerAttributes
             {
                 IsAdvanced = true
             }));
 
-            // _hideSingleSection = Config.Bind("General", "Hide single sections", false, new ConfigDescription("Show section title for plugins with only one section"));
-            // _pluginConfigCollapsedDefault = Config.Bind("General", "Plugin collapsed default", true, new ConfigDescription("If set to true plugins will be collapsed when opening the configuration manager window"));
-            // _toolTips = Config.Bind("General", "Setting Tooltips", true, new ConfigDescription("Hovering over setting label will provide a tooltip if enabled."));
+            _logger = Logger;
+            _logger.LogEvent += logFowarding;
 
             // Do Patching
             var harmony = new HarmonyLib.Harmony(Guid);
@@ -77,6 +94,45 @@ namespace ConfigurationManager
 
             ModdingUtils.Initialize(this, Logger, "HolloFoxes'");
             SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+
+        private void logFowarding(object o, LogEventArgs e)
+        {
+            switch (useSentry)
+            {
+                // case logToSentry.Prompt:
+                //     SystemMessage.AskToConfirmDelete("Do you want to provide logs?", "Do you want to submit", "Opt in","Opt out", false,
+                //         (t) =>
+                //         {
+                //             if (t)
+                //             {
+                //                 _useSentry.Value = logToSentry.Enabled;
+                //                 relay(o,e);
+                //             } 
+                //             else
+                //                 _useSentry.Value = logToSentry.Disabled;
+                //         }, 
+                //         null,"Opt out");
+                //     break;
+                case logToSentry.Enabled:
+                    relay(o,e);
+                    break;
+            }
+        }
+
+        private void relay(object o, LogEventArgs e)
+        {
+            switch (e.Level)
+            {
+                case BepInEx.Logging.LogLevel.Fatal:
+                    SentrySdk.CaptureMessage(e.Data.ToString(),_scope, SentryLevel.Fatal);
+                    break;
+                case BepInEx.Logging.LogLevel.Error:
+                    SentrySdk.CaptureMessage(e.Data.ToString(), _scope, SentryLevel.Error);
+                    break;
+                default:
+                    break;
+            }
         }
 
         public static void OnSceneLoaded(Scene scene, LoadSceneMode mode)

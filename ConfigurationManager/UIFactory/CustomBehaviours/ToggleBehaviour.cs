@@ -1,8 +1,11 @@
 ﻿using BepInEx.Configuration;
+using ConfigurationManager.Utilities;
 using ModdingTales;
+using Sentry;
 using SRF;
 using UnityEngine;
 using UnityEngine.UI;
+using static ConfigurationManager.ConfigurationManager;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
@@ -13,7 +16,7 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
         private void Awake()
         {
-            Setup();
+            Utils.SentryInvoke(Setup);
         }
 
         internal void Setup()
@@ -28,14 +31,17 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             toggleref.onValueChanged.RemoveAllListeners();
             toggleref.onValueChanged.AddListener((bool b) =>
             {
-                if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
-                    ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} started updating");
+                Utils.SentryInvoke(() =>
+                {
+                    if (LogLevel >= ModdingUtils.LogLevel.High)
+                        _logger.LogInfo($"{Entry.Definition.Key} started updating");
 
-                Entry.BoxedValue = b;
-                Attributes?.CallbackAction?.Invoke(b);
+                    Entry.BoxedValue = b;
+                    Attributes?.CallbackAction?.Invoke(b);
 
-                if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
-                    ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated");
+                    if (LogLevel >= ModdingUtils.LogLevel.High)
+                        _logger.LogInfo($"{Entry.Definition.Key} has been updated");
+                });
             });
             toggleref.isOn = (bool)Entry.BoxedValue;
 

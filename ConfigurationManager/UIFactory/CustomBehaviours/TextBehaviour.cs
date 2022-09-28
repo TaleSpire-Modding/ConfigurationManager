@@ -1,10 +1,13 @@
 ﻿using BepInEx.Configuration;
+using ConfigurationManager.Utilities;
 using LordAshes;
 using ModdingTales;
+using Sentry;
 using SRF;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static ConfigurationManager.ConfigurationManager;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
@@ -17,7 +20,7 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
         private void Awake()
         {
-            Setup();
+            Utils.SentryInvoke(Setup);
         }
 
         private void Update()
@@ -63,18 +66,28 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() =>
                 {
-                    SystemMessage.ClosePendingMessage();
-                    ConfigEditorPlugin.Subscribe(EditorCallback);   
-                    ConfigEditorPlugin.offsetXToEntry = 120;
-                    ConfigEditorPlugin.Open(Entry.Definition.Key, (string) Entry.BoxedValue, new string[] { "Cancel", "Save" });
+                    Utils.SentryInvoke(() => {
+                        SystemMessage.ClosePendingMessage();
+                        ConfigEditorPlugin.Subscribe((s1,s2) =>
+                        {
+                            Utils.SentryInvoke(() => { EditorCallback(s1, s2); });
+                        });   
+                        ConfigEditorPlugin.offsetXToEntry = 120;
+                        ConfigEditorPlugin.Open(Entry.Definition.Key, (string) Entry.BoxedValue, new string[] { "Cancel", "Save" });
+                    });
                 });
             }
             else
             {
                 button.onClick.AddListener(() =>
                 {
-                    SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired text", "OK",
-                        (string t) => Save(t), null, "Cancel", null, Entry.BoxedValue.ToString());
+                    Utils.SentryInvoke(() =>
+                    {
+                        SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired text",
+                            "OK",
+                            (string t) => { Utils.SentryInvoke(() => { Save(t); }); }, 
+                            null, "Cancel", null, Entry.BoxedValue.ToString());
+                    });
                 });
             }
         }
@@ -91,22 +104,22 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                     ConfigEditorPlugin.Close();
                     break;
                 default:
-                    if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.Low)
-                        ConfigurationManager._logger.LogInfo($"Editor Callback for {Entry.Definition.Key} had a button with wrong text.");
+                    if (LogLevel >= ModdingUtils.LogLevel.Low)
+                        _logger.LogInfo($"Editor Callback for {Entry.Definition.Key} had a button with wrong text.");
                     break;
             }
         }
 
         private void Save(string t)
         {
-            if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
-                ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} started updating");
+            if (LogLevel >= ModdingUtils.LogLevel.High)
+                _logger.LogInfo($"{Entry.Definition.Key} started updating");
 
             value.text = t;
             Entry.BoxedValue = t;
 
-            if (ConfigurationManager.LogLevel >= ModdingUtils.LogLevel.High)
-                ConfigurationManager._logger.LogInfo($"{Entry.Definition.Key} has been updated");
+            if (LogLevel >= ModdingUtils.LogLevel.High)
+                _logger.LogInfo($"{Entry.Definition.Key} has been updated");
         }
     }
 }

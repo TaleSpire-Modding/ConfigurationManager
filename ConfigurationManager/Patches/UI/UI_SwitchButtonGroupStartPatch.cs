@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
@@ -45,7 +46,10 @@ namespace ConfigurationManager.Patches.UI
             var rot = clone.transform.rotation;
             clone.transform.SetPositionAndRotation(newPost, rot);
             clone.onClick.RemoveAllListeners();
-            clone.onClick.AddListener(Click);
+            clone.onClick.AddListener(() =>
+            {
+                Utils.SentryInvoke(Click);
+            });
             var textOnHover = clone.gameObject.GetComponent<MouseTextOnHover>();
             textOnHover.mouseHoverText = "Plugin Configurations";
             clone.GetComponentsInChildren<Image>()[2].sprite = FileAccessPlugin.Image.LoadSprite("Images/Icons/plug.png");
@@ -62,9 +66,9 @@ namespace ConfigurationManager.Patches.UI
 
         private static void Click()
         {
-            content.transform.SetPositionAndRotation(original.transform.position,original.transform.rotation);
+            content.transform.SetPositionAndRotation(original.transform.position, original.transform.rotation);
             var t = content.transform.GetComponent<RectTransform>();
-            t.sizeDelta = new Vector2(0,-pos.y);
+            t.sizeDelta = new Vector2(0, -pos.y);
 
             var setting = clone.transform.parent.parent.parent.gameObject.GetComponent<GameSettings>();
             setting.SwitchTab(3);
