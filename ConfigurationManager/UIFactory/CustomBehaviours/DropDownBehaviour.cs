@@ -19,7 +19,7 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
         {
             Utils.SentryInvoke(Setup);
         }
-        
+
         internal void Setup()
         {
             if (Entry == null) return;
@@ -32,24 +32,17 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             var tmp_dropdown = gameObject.GetComponent<TMP_Dropdown>();
             tmp_dropdown.ClearOptions();
             var values = Enum.GetValues(Entry.BoxedValue.GetType());
-            List<string> convertedValues = new List<string>();
-            foreach (var value in values)
-            {
-                convertedValues.Add(value.ToString());
-            }
+            var convertedValues = new List<string>();
+            foreach (var value in values) convertedValues.Add(value.ToString());
             tmp_dropdown.AddOptions(convertedValues);
 
             var dropdownValue = -1;
-            for (int i = 0; i < values.Length; i++)
-            {
+            for (var i = 0; i < values.Length; i++)
                 if (convertedValues[i] == Entry.BoxedValue.ToString())
-                {
                     dropdownValue = i;
-                }
-            }
-            
+
             tmp_dropdown.onValueChanged.RemoveAllListeners();
-            tmp_dropdown.onValueChanged.AddListener((int i) =>
+            tmp_dropdown.onValueChanged.AddListener(i =>
             {
                 Utils.SentryInvoke(() =>
                 {
@@ -64,21 +57,18 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                 });
             });
             tmp_dropdown.value = dropdownValue;
-            
+
             if (Entry.Description.Tags.Length > 0)
-            {
                 foreach (var descriptionTag in Entry.Description.Tags)
-                {
                     if (descriptionTag is ConfigurationManagerAttributes managerAttributes)
                         Attributes = managerAttributes;
-                }
-            }
         }
 
         private void RevertToDefault()
         {
             Entry.BoxedValue = Entry.DefaultValue;
-            gameObject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = Entry.BoxedValue.ToString();
+            gameObject.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text =
+                Entry.BoxedValue.ToString();
         }
     }
 }

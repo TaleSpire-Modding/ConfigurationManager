@@ -4,14 +4,13 @@ using ConfigurationManager.Patches.UI;
 using ConfigurationManager.Utilities;
 using HarmonyLib;
 using ModdingTales;
-using Sentry;
+using UnityEngine.UI;
 using static ConfigurationManager.ConfigurationManager;
 
 namespace ConfigurationManager.Patches.GameSetting
 {
-
     [HarmonyPatch(typeof(GameSettings), "SwitchTab")]
-    sealed class GameSettingsSwitchPatch
+    internal sealed class GameSettingsSwitchPatch
     {
         public static void Postfix(int index)
         {
@@ -21,10 +20,9 @@ namespace ConfigurationManager.Patches.GameSetting
     }
 
     /// <summary>
-    /// 
     /// </summary>
     [HarmonyPatch(typeof(GameSettings), "OnInstanceSetup")]
-    sealed class GameSettingsSetupPatch
+    internal sealed class GameSettingsSetupPatch
     {
         internal static bool AlreadyRan;
         private static BaseUnityPlugin[] _plugins;
@@ -50,22 +48,22 @@ namespace ConfigurationManager.Patches.GameSetting
                     _logger.LogInfo($"Settings Found: {entry.Definition.Section}, {entry.Definition.Key} ");
 
                 foreach (var plugin in _plugins)
-                    foreach (var entry in SettingSearcher.GetPluginConfig(plugin))
-                        _logger.LogInfo($"Settings Found in {plugin.Info.Metadata.Name} : {entry.Definition.Section}, {entry.Definition.Key} ");
+                foreach (var entry in SettingSearcher.GetPluginConfig(plugin))
+                    _logger.LogInfo(
+                        $"Settings Found in {plugin.Info.Metadata.Name} : {entry.Definition.Section}, {entry.Definition.Key} ");
             }
 
             // Start by adding new tab
             var go = SingletonBehaviour<GameSettings>.Instance.gameObject;
             var btnGroup = go.GetComponentInChildren<UI_SwitchButtonGroup>();
-            var buttons = btnGroup.gameObject.GetComponentsInChildren<UnityEngine.UI.Button>().ToList();
+            var buttons = btnGroup.gameObject.GetComponentsInChildren<Button>().ToList();
             UI_SwitchButtonGroupStartPatch.Postfix(btnGroup, ref buttons, _plugins);
 
             // Populate post setup
             if (LogLevel >= ModdingUtils.LogLevel.Medium)
-                    _logger.LogInfo("GameSettings SetUp Patch completed");
+                _logger.LogInfo("GameSettings SetUp Patch completed");
 
             AlreadyRan = true;
         }
-
     }
 }

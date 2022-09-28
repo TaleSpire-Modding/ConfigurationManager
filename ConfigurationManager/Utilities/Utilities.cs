@@ -1,22 +1,21 @@
 ﻿// Made by MarC0 / ManlyMarco
 // Copyright 2018 GNU General Public License v3.0
 
-using BepInEx;
 using System;
 using System.Linq;
-using Object = UnityEngine.Object;
+using BepInEx;
+using BepInEx.Bootstrap;
 using Sentry;
 using static ConfigurationManager.ConfigurationManager;
+using Object = UnityEngine.Object;
 
 namespace ConfigurationManager.Utilities
 {
     internal static class Utils
     {
-
         public static void SentryInvoke(Action a)
         {
             if (useSentry > logToSentry.Disabled)
-            {
                 using (SentrySdk.Init(_sentryOptions))
                 {
                     try
@@ -29,11 +28,8 @@ namespace ConfigurationManager.Utilities
                         throw e;
                     }
                 }
-            }
             else
-            {
                 a.Invoke();
-            }
         }
 /*
         public static string ToProperCase(this string str)
@@ -84,9 +80,15 @@ namespace ConfigurationManager.Utilities
 */
 
         // Additionally search for BaseUnityPlugin to find dynamically loaded plugins
-        public static BaseUnityPlugin[] FindPlugins() => BepInEx.Bootstrap.Chainloader.Plugins.Concat(Object.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>()).Distinct().ToArray();
+        public static BaseUnityPlugin[] FindPlugins()
+        {
+            return Chainloader.Plugins
+                .Concat(Object.FindObjectsOfType(typeof(BaseUnityPlugin)).Cast<BaseUnityPlugin>()).Distinct().ToArray();
+        }
 
-        public static bool IsNumber(this object value) => value is sbyte
+        public static bool IsNumber(this object value)
+        {
+            return value is sbyte
                    || value is byte
                    || value is short
                    || value is ushort
@@ -97,8 +99,9 @@ namespace ConfigurationManager.Utilities
                    || value is float
                    || value is double
                    || value is decimal;
+        }
 
-/*
+        /*
         public static string AppendZero(this string s)
         {
             return !s.Contains(".") ? s + ".0" : s;

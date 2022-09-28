@@ -1,7 +1,6 @@
 ﻿using BepInEx.Configuration;
 using ConfigurationManager.Utilities;
 using ModdingTales;
-using Sentry;
 using SRF;
 using UnityEngine;
 using UnityEngine.UI;
@@ -29,7 +28,7 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
             var toggleref = gameObject.GetComponent<Toggle>();
             toggleref.onValueChanged.RemoveAllListeners();
-            toggleref.onValueChanged.AddListener((bool b) =>
+            toggleref.onValueChanged.AddListener(b =>
             {
                 Utils.SentryInvoke(() =>
                 {
@@ -49,14 +48,9 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             toggleGraphic.Toggle((bool)Entry.BoxedValue);
 
             if (Entry.Description.Tags.Length > 0)
-            {
                 foreach (var descriptionTag in Entry.Description.Tags)
-                {
                     if (descriptionTag is ConfigurationManagerAttributes managerAttributes)
                         Attributes = managerAttributes;
-                }
-            }
         }
-
     }
 }

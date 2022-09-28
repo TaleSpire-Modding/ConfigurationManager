@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using BepInEx;
 using BepInEx.Configuration;
+using ConfigurationManager.UIFactory.CustomBehaviours;
 using ConfigurationManager.Utilities;
 using LordAshes;
 using ModdingTales;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
 
 namespace ConfigurationManager.Patches.UI
 {
-
     internal static class UI_SwitchButtonGroupStartPatch
     {
         // Button for Settings Switch
@@ -24,7 +22,7 @@ namespace ConfigurationManager.Patches.UI
         // Templates for Headers
         private static GameObject _modNameHeader;
         private static GameObject _sectionHeader;
-        
+
         // Templates for Fields
         private static GameObject _keybindTemplate;
         private static GameObject _dropDownTemplate;
@@ -33,7 +31,8 @@ namespace ConfigurationManager.Patches.UI
         private static Vector3 pos;
 
 
-        private static void AddButton(UI_SwitchButtonGroup __instance, int i, Button template, string key, ref List<Button> ____buttons, float distance)
+        private static void AddButton(UI_SwitchButtonGroup __instance, int i, Button template, string key,
+            ref List<Button> ____buttons, float distance)
         {
             clone = Object.Instantiate(template);
             clone.transform.SetParent(__instance.transform, false);
@@ -42,17 +41,16 @@ namespace ConfigurationManager.Patches.UI
             else
                 ____buttons[i] = clone;
             clone.gameObject.name = key;
-            var newPost = new Vector3(clone.transform.position.x + (distance * i), clone.transform.position.y, clone.transform.position.z);
+            var newPost = new Vector3(clone.transform.position.x + distance * i, clone.transform.position.y,
+                clone.transform.position.z);
             var rot = clone.transform.rotation;
             clone.transform.SetPositionAndRotation(newPost, rot);
             clone.onClick.RemoveAllListeners();
-            clone.onClick.AddListener(() =>
-            {
-                Utils.SentryInvoke(Click);
-            });
+            clone.onClick.AddListener(() => { Utils.SentryInvoke(Click); });
             var textOnHover = clone.gameObject.GetComponent<MouseTextOnHover>();
             textOnHover.mouseHoverText = "Plugin Configurations";
-            clone.GetComponentsInChildren<Image>()[2].sprite = FileAccessPlugin.Image.LoadSprite("Images/Icons/plug.png");
+            clone.GetComponentsInChildren<Image>()[2].sprite =
+                FileAccessPlugin.Image.LoadSprite("Images/Icons/plug.png");
 
             var scrollViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0).GetChild(2);
             _sectionHeader = scrollViewContent.GetChild(2).GetChild(0).GetChild(0).gameObject;
@@ -74,7 +72,8 @@ namespace ConfigurationManager.Patches.UI
             setting.SwitchTab(3);
         }
 
-        internal static void Postfix(UI_SwitchButtonGroup __instance, ref List<Button> ____buttons, BaseUnityPlugin[] plugins)
+        internal static void Postfix(UI_SwitchButtonGroup __instance, ref List<Button> ____buttons,
+            BaseUnityPlugin[] plugins)
         {
             if (__instance.gameObject.name == "ToggleGroup" && __instance.transform.parent.name == "Settings")
             {
@@ -88,7 +87,7 @@ namespace ConfigurationManager.Patches.UI
                 Object.Destroy(old);
 
                 var distance = t2.transform.localPosition.x - template.transform.localPosition.x;
-                AddButton(__instance,3,template,"Mod Config",ref ____buttons,distance);
+                AddButton(__instance, 3, template, "Mod Config", ref ____buttons, distance);
                 AddContent(scrollViewContent, plugins);
 
                 // Clear added config's orange background
@@ -110,9 +109,9 @@ namespace ConfigurationManager.Patches.UI
             var rot = sampleText.rotation;
 
             _modNameHeader = title.gameObject;
-            
+
             content.transform.DetachChildren();
-            
+
 
             foreach (var plugin in plugins)
             {
@@ -147,24 +146,25 @@ namespace ConfigurationManager.Patches.UI
                     foreach (var entry in entries.Where(e => e.Definition.Section == section))
                     {
                         if (ConfigurationManager.LogLevel == ModdingUtils.LogLevel.All)
-                            ConfigurationManager._logger.LogInfo($"{entry.Definition.Section}:{entry.Definition.Key}:{entry.BoxedValue}");
+                            ConfigurationManager._logger.LogInfo(
+                                $"{entry.Definition.Section}:{entry.Definition.Key}:{entry.BoxedValue}");
 
                         if (entry.BoxedValue is KeyboardShortcut || entry.BoxedValue is KeyCode)
                         {
                             var gameObject = Object.Instantiate(_keybindTemplate);
                             gameObject.transform.SetParent(content.transform);
                             gameObject.transform.localPosition = new Vector3(20, pos.y);
-                            var keybindBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.KeybindBehaviour>();
+                            var keybindBehaviour = gameObject.AddComponent<KeybindBehaviour>();
                             keybindBehaviour.Entry = entry;
                             keybindBehaviour.Setup();
                             pos += 28f * Vector3.down;
                         }
-                        else if (Utils.IsNumber(entry.BoxedValue))
+                        else if (entry.BoxedValue.IsNumber())
                         {
                             var gameObject = Object.Instantiate(_textFieldTemplate);
                             gameObject.transform.SetParent(content.transform);
                             gameObject.transform.localPosition = new Vector3(20, pos.y - 14f);
-                            var toggleBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.NumberBehaviour>();
+                            var toggleBehaviour = gameObject.AddComponent<NumberBehaviour>();
                             toggleBehaviour.posy = pos.y - 14f;
                             toggleBehaviour.Entry = entry;
                             toggleBehaviour.Setup();
@@ -175,8 +175,8 @@ namespace ConfigurationManager.Patches.UI
                             var gameObject = Object.Instantiate(_textFieldTemplate);
                             gameObject.transform.SetParent(content.transform);
                             gameObject.transform.localPosition = new Vector3(20, pos.y - 14f);
-                            
-                            var toggleBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.TextBehaviour>();
+
+                            var toggleBehaviour = gameObject.AddComponent<TextBehaviour>();
                             toggleBehaviour.posy = pos.y - 14f;
                             toggleBehaviour.Entry = entry;
                             toggleBehaviour.Setup();
@@ -189,7 +189,7 @@ namespace ConfigurationManager.Patches.UI
                             gameObject.transform.localPosition = new Vector3(5, pos.y);
                             pos += 28f * Vector3.down;
 
-                            var toggleBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.ToggleBehaviour>();
+                            var toggleBehaviour = gameObject.AddComponent<ToggleBehaviour>();
                             toggleBehaviour.Entry = entry;
                             toggleBehaviour.Setup();
                         }
@@ -200,7 +200,7 @@ namespace ConfigurationManager.Patches.UI
                             gameObject.transform.localPosition = new Vector3(108, pos.y);
                             pos += 28f * Vector3.down;
 
-                            var dropDownBehaviour = gameObject.AddComponent<UIFactory.CustomBehaviours.DropDownBehaviour>();
+                            var dropDownBehaviour = gameObject.AddComponent<DropDownBehaviour>();
                             dropDownBehaviour.Entry = entry;
                             dropDownBehaviour.Setup();
                         }
@@ -210,8 +210,10 @@ namespace ConfigurationManager.Patches.UI
                             // pos += 28f * Vector3.down;
                         }
                     }
+
                     pos += 11f * Vector3.down;
                 }
+
                 pos += 11f * Vector3.down;
             }
         }
