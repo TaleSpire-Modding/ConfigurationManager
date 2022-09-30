@@ -127,6 +127,9 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                                 if (LogLevel >= ModdingUtils.LogLevel.High)
                                     _logger.LogInfo($"{Entry.Definition.Key} has been updated");
                             });
+
+                            // Not covered by Config Manager's Sentry
+                            Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
                         }, null, "Cancel", null, Entry.BoxedValue.ToString());
                 });
             });

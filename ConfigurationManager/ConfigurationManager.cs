@@ -43,46 +43,46 @@ namespace ConfigurationManager
         /// <summary>
         ///     Version constant
         /// </summary>
-        public const string Version = "0.9.6.3";
+        public const string Version = "0.9.10.0";
 
         internal static ManualLogSource _logger;
         internal static ConfigurationManager _instance;
-        internal static SentryOptions _sentryOptions;
-        internal static Action<Scope> _scope;
+        
+        // Sentry Relaged
+        internal static SentryOptions _sentryOptions = new SentryOptions
+        {
+            // Tells which project in Sentry to send events to:
+            Dsn = "https://77b85586308d445184b518ccab1542cb@o1208746.ingest.sentry.io/6778961",
+            Debug = true,
+            TracesSampleRate = 0.2,
+            IsGlobalModeEnabled = true,
+            AttachStacktrace = true
+        };
 
-        private ConfigEntry<ModdingUtils.LogLevel> _logLevel;
-        private readonly ConfigEntry<logToSentry> _useSentry;
+        internal static Action<Scope> _scope = scope =>
+        {
+            scope.User = new User
+            {
+                Username = BackendManager.Username,
+            };
+            scope.Release = Version;
+        };
+
+        // Config
+        private static ConfigEntry<ModdingUtils.LogLevel> _logLevel;
+        public static ConfigEntry<logToSentry> _useSentry;
+        internal static ModdingUtils.LogLevel LogLevel => _logLevel.Value == ModdingUtils.LogLevel.Inherited ? ModdingUtils.LogLevelConfig.Value : _logLevel.Value;
+        internal static logToSentry useSentry => _useSentry.Value;
 
         /// <inheritdoc />
         public ConfigurationManager()
         {
             _instance = this;
             _useSentry = Config.Bind("Filtering", "Send Errors to Dashboard", logToSentry.Disabled);
-            _sentryOptions = new SentryOptions
-            {
-                // Tells which project in Sentry to send events to:
-                Dsn = "https://77b85586308d445184b518ccab1542cb@o1208746.ingest.sentry.io/6778961",
-                Debug = true,
-                TracesSampleRate = 0.2,
-                IsGlobalModeEnabled = true,
-                AttachStacktrace = true
-            };
-            _scope = scope =>
-            {
-                scope.User = new User
-                {
-                    Username = BackendManager.Username
-                };
-            };
+            _logger = Logger;
 
             Utils.SentryInvoke(Setup);
         }
-
-        internal static ModdingUtils.LogLevel LogLevel => _instance._logLevel.Value == ModdingUtils.LogLevel.Inherited
-            ? ModdingUtils.LogLevelConfig.Value
-            : _instance._logLevel.Value;
-
-        internal static logToSentry useSentry => _instance._useSentry.Value;
 
         private void Setup()
         {
@@ -92,7 +92,6 @@ namespace ConfigurationManager
                     IsAdvanced = true
                 }));
 
-            _logger = Logger;
             _logger.LogEvent += logFowarding;
 
             // Do Patching
@@ -105,30 +104,7 @@ namespace ConfigurationManager
 
         private void logFowarding(object o, LogEventArgs e)
         {
-            switch (useSentry)
-            {
-                // case logToSentry.Prompt:
-                //     SystemMessage.AskToConfirmDelete("Do you want to provide logs?", "Do you want to submit", "Opt in","Opt out", false,
-                //         (t) =>
-                //         {
-                //             if (t)
-                //             {
-                //                 _useSentry.Value = logToSentry.Enabled;
-                //                 relay(o,e);
-                //             } 
-                //             else
-                //                 _useSentry.Value = logToSentry.Disabled;
-                //         }, 
-                //         null,"Opt out");
-                //     break;
-                case logToSentry.Enabled:
-                    relay(o, e);
-                    break;
-            }
-        }
-
-        private void relay(object o, LogEventArgs e)
-        {
+            if (useSentry != logToSentry.Enabled) return;
             switch (e.Level)
             {
                 case BepInEx.Logging.LogLevel.Fatal:

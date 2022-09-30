@@ -63,7 +63,13 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                         SystemMessage.ClosePendingMessage();
                         ConfigEditorPlugin.Subscribe((s1, s2) =>
                         {
-                            Utils.SentryInvoke(() => { EditorCallback(s1, s2); });
+                            Utils.SentryInvoke(() =>
+                            {
+                                EditorCallback(s1, s2);
+                            });
+
+                            // Not covered by Config Manager's Sentry
+                            Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
                         });
                         ConfigEditorPlugin.offsetXToEntry = 120;
                         ConfigEditorPlugin.Open(Entry.Definition.Key, (string)Entry.BoxedValue,
@@ -79,7 +85,13 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                     {
                         SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired text",
                             "OK",
-                            t => { Utils.SentryInvoke(() => { Save(t); }); },
+                            t =>
+                            {
+                                Utils.SentryInvoke(() => { Save(t); });
+
+                                // Not covered by Config Manager's Sentry
+                                Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
+                            },
                             null, "Cancel", null, Entry.BoxedValue.ToString());
                     });
                 });
@@ -109,8 +121,8 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             if (LogLevel >= ModdingUtils.LogLevel.High)
                 _logger.LogInfo($"{Entry.Definition.Key} started updating");
 
-            value.text = t;
             Entry.BoxedValue = t;
+            value.text = t;
 
             if (LogLevel >= ModdingUtils.LogLevel.High)
                 _logger.LogInfo($"{Entry.Definition.Key} has been updated");
