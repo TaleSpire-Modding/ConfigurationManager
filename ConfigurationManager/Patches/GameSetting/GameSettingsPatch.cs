@@ -142,7 +142,7 @@ namespace ConfigurationManager.Patches.GameSetting
             // Start by adding new tab
             var go = SingletonBehaviour<GameSettings>.Instance.gameObject;
             var btnGroup = go.GetComponentInChildren<UI_SwitchButtonGroup>();
-            var buttons = btnGroup.gameObject.GetComponentsInChildren<Button>().ToList();
+            var buttons = btnGroup.gameObject.GetComponentsInChildren<UnityEngine.UI.Button>().ToList();
             UI_SwitchButtonGroupStartPatch.Postfix(btnGroup, ref buttons, _plugins);
 
             // Populate post setup
