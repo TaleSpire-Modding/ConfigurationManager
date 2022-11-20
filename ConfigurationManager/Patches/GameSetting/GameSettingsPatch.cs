@@ -4,12 +4,12 @@ using ConfigurationManager.Patches.UI;
 using ConfigurationManager.Utilities;
 using HarmonyLib;
 using ModdingTales;
-using UnityEngine.UI;
 using static ConfigurationManager.ConfigurationManager;
 
 namespace ConfigurationManager.Patches.GameSetting
 {
-    [HarmonyPatch(typeof(GameSettings), "SwitchTab")]
+
+   [HarmonyPatch(typeof(GameSettings), "SwitchTab")]
     internal sealed class GameSettingsSwitchPatch
     {
         public static void Postfix(int index)
@@ -56,7 +56,7 @@ namespace ConfigurationManager.Patches.GameSetting
             // Start by adding new tab
             var go = SingletonBehaviour<GameSettings>.Instance.gameObject;
             var btnGroup = go.GetComponentInChildren<UI_SwitchButtonGroup>();
-            var buttons = btnGroup.gameObject.GetComponentsInChildren<Button>().ToList();
+            var buttons = btnGroup.gameObject.GetComponentsInChildren<UnityEngine.UI.Button>().ToList();
             UI_SwitchButtonGroupStartPatch.Postfix(btnGroup, ref buttons, _plugins);
 
             // Populate post setup
