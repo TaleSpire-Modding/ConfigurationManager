@@ -1,21 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.Linq;
 using BepInEx;
 using ConfigurationManager.Patches.UI;
 using ConfigurationManager.Utilities;
 using HarmonyLib;
 using ModdingTales;
-using TMPro;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Entities;
-using Unity.Jobs;
-using Unity.Mathematics;
-using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 using static ConfigurationManager.ConfigurationManager;
 
 namespace ConfigurationManager.Patches.GameSetting
