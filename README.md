@@ -11,6 +11,7 @@ When you open the settings menu in TaleSpire, an extra 4th tab which gathers all
 - Keyboard Shortcuts (only displays, WIP)
 
 ## Changelog
+- 0.11.0: Fix error being thrown on role switch in game.
 - 0.10.0: Upgrade to Framework 4.8.0 and Nuget Dependency
 - 0.9.10: include callbacks for plugins (this is not covered by Config Manager's Sentry)
 - 0.9.8: removed exception throw that was left in 0.9.7
