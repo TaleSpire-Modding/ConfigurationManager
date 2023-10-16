@@ -4,7 +4,7 @@
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>ConfigurationManager</AssemblyName>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>0.11.0</Version>
+    <Version>0.12.0</Version>
     <PackageId>TaleSpire.$(AssemblyName)</PackageId>
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
     <RepositoryType>git</RepositoryType>
@@ -35,10 +35,10 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ConfigEditorPlugin">
-      <HintPath>..\..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\TaleSpire\profiles\CMPDev\BepInEx\plugins\LordAshes-ConfigEditor\ConfigEditorPlugin.dll</HintPath>
+      <HintPath>C:\Users\ujkkj\AppData\Roaming\r2modmanPlus-local\TaleSpire\profiles\CMPDev\BepInEx\plugins\LordAshes-ConfigEditor\ConfigEditorPlugin.dll</HintPath>
     </Reference>
     <Reference Include="FileAccessPlugin">
-      <HintPath>..\..\..\..\..\..\AppData\Roaming\r2modmanPlus-local\TaleSpire\profiles\CMPDev\BepInEx\plugins\LordAshes-FileAccessPlugin\FileAccessPlugin.dll</HintPath>
+      <HintPath>C:\Users\ujkkj\AppData\Roaming\r2modmanPlus-local\TaleSpire\profiles\CMPDev\BepInEx\plugins\LordAshes-FileAccessPlugin\FileAccessPlugin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

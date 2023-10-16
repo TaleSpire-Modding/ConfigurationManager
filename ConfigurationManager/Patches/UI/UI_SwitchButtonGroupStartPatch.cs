@@ -84,12 +84,12 @@ namespace ConfigurationManager.Patches.UI
                 var scrollViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0);
 
                 // replace old content
-                var old = scrollViewContent.GetChild(3);
+                var old = scrollViewContent.GetChild(4);
                 old.SetParent(null);
                 Object.Destroy(old);
 
                 var distance = t2.transform.localPosition.x - template.transform.localPosition.x;
-                AddButton(__instance, 3, template, "Mod Config", ref ____buttons, distance);
+                AddButton(__instance, 4, template, "Mod Config", ref ____buttons, distance);
                 AddContent(scrollViewContent, plugins);
 
                 // Clear added config's orange background
