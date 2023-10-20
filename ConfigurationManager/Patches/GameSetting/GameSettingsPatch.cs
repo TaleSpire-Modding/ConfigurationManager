@@ -9,16 +9,6 @@ using static ConfigurationManager.ConfigurationManager;
 namespace ConfigurationManager.Patches.GameSetting
 {
 
-   [HarmonyPatch(typeof(GameSettings), "SwitchTab")]
-    internal sealed class GameSettingsSwitchPatch
-    {
-        public static void Postfix(int index)
-        {
-            if (LogLevel == ModdingUtils.LogLevel.All)
-                _logger.LogInfo($"switching to tab: {index}");
-        }
-    }
-
     /// <summary>
     /// </summary>
     [HarmonyPatch(typeof(GameSettings), "OnInstanceSetup")]

@@ -5,15 +5,14 @@ This plugin provides an update to the settings tab in TaleSpire. This allow user
 ## Usage
 
 When you open the settings menu in TaleSpire, an extra 4th tab which gathers all plugin config settings to a place that you can alter them. The Following types are supported:
-```
 - Numbers
 - Text
 - Enums (as a dropdown)
 - Keyboard Shortcuts (only displays, WIP)
-```
 
 ## Changelog
-```
+- 0.13.0: Update for symbiote slab release
+- 0.12.0: Update for symbiote UI in settings
 - 0.11.0: Fix error being thrown on role switch in game.
 - 0.10.0: Upgrade to Framework 4.8.0 and Nuget Dependency
 - 0.9.10: include callbacks for plugins (this is not covered by Config Manager's Sentry)
@@ -26,7 +25,6 @@ When you open the settings menu in TaleSpire, an extra 4th tab which gathers all
 - 0.9.2: fix text input alignment, updated logging, optimized performance.
 - 0.9.1: Update icon (no change)
 - 0.9.0: Alpha Release
-```
 
 ## Shoutouts
 Shoutout to my Patreons on https://www.patreon.com/HolloFox recognising your
