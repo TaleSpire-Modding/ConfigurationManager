@@ -43,7 +43,7 @@ namespace ConfigurationManager
         /// <summary>
         ///     Version constant
         /// </summary>
-        public const string Version = "0.13.0.0";
+        public const string Version = "0.14.0.0";
 
         internal static ManualLogSource _logger;
         internal static ConfigurationManager _instance;
@@ -63,7 +63,7 @@ namespace ConfigurationManager
         {
             scope.User = new User
             {
-                Username = BackendManager.Username,
+                Username = UserNameManager.Username,
             };
             scope.Release = Version;
         };
@@ -94,7 +94,7 @@ namespace ConfigurationManager
 
             _logger.LogEvent += logFowarding;
 
-            // Do Patching
+            // Patching
             var harmony = new Harmony(Guid);
             harmony.PatchAll();
 

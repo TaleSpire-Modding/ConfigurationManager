@@ -11,6 +11,7 @@ When you open the settings menu in TaleSpire, an extra 4th tab which gathers all
 - Keyboard Shortcuts (only displays, WIP)
 
 ## Changelog
+- 0.14.0: TaleWeaver update
 - 0.13.0: Update for symbiote slab release
 - 0.12.0: Update for symbiote UI in settings
 - 0.11.0: Fix error being thrown on role switch in game.
