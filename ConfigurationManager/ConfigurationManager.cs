@@ -43,7 +43,7 @@ namespace ConfigurationManager
         /// <summary>
         ///     Version constant
         /// </summary>
-        public const string Version = "0.14.0.0";
+        public const string Version = "0.15.0.0";
 
         internal static ManualLogSource _logger;
         internal static ConfigurationManager _instance;

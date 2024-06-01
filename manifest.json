@@ -1,6 +1,6 @@
 {
     "name": "Config_Manager",
-    "version_number": "0.14.0",
+    "version_number": "0.15.0",
     "website_url": "https://github.com/TaleSpire-Modding/ConfigurationManager",
     "description": "Updates the settings tab in TaleSpire to allow users to update Plugin Settings.",
     "dependencies": [

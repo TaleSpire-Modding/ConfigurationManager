@@ -89,7 +89,7 @@ namespace ConfigurationManager.Patches.UI
                 Object.Destroy(old);
 
                 var distance = t2.transform.localPosition.x - template.transform.localPosition.x;
-                AddButton(__instance, 4, template, "Mod Config", ref ____buttons, distance);
+                AddButton(__instance, 5, template, "Mod Config", ref ____buttons, distance);
                 AddContent(scrollViewContent, plugins);
 
                 // Clear added config's orange background
