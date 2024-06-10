@@ -3,10 +3,8 @@
 
 using System;
 using BepInEx;
-using BepInEx.Configuration;
 using BepInEx.Logging;
 using ConfigurationManager.Patches.GameSetting;
-using ConfigurationManager.Utilities;
 using HarmonyLib;
 using LordAshes;
 using ModdingTales;
@@ -43,22 +41,11 @@ namespace ConfigurationManager
         /// <summary>
         ///     Version constant
         /// </summary>
-        public const string Version = "0.15.0.0";
+        public const string Version = "0.16.0.0";
 
         internal static ManualLogSource _logger;
         internal static ConfigurationManager _instance;
         
-        // Sentry Relaged
-        internal static SentryOptions _sentryOptions = new SentryOptions
-        {
-            // Tells which project in Sentry to send events to:
-            Dsn = "https://77b85586308d445184b518ccab1542cb@o1208746.ingest.sentry.io/6778961",
-            Debug = true,
-            TracesSampleRate = 0.2,
-            IsGlobalModeEnabled = true,
-            AttachStacktrace = true
-        };
-
         internal static Action<Scope> _scope = scope =>
         {
             scope.User = new User
@@ -68,51 +55,29 @@ namespace ConfigurationManager
             scope.Release = Version;
         };
 
-        // Config
-        private static ConfigEntry<ModdingUtils.LogLevel> _logLevel;
-        public static ConfigEntry<logToSentry> _useSentry;
-        internal static ModdingUtils.LogLevel LogLevel => _logLevel.Value == ModdingUtils.LogLevel.Inherited ? ModdingUtils.LogLevelConfig.Value : _logLevel.Value;
-        internal static logToSentry useSentry => _useSentry.Value;
-
         /// <inheritdoc />
         public ConfigurationManager()
         {
             _instance = this;
-            _useSentry = Config.Bind("Filtering", "Send Errors to Dashboard", logToSentry.Disabled);
             _logger = Logger;
 
-            Utils.SentryInvoke(Setup);
+            Setup();
         }
 
         private void Setup()
         {
-            _logLevel = Config.Bind("Filtering", "Show Logs", ModdingUtils.LogLevel.Inherited, new ConfigDescription("",
-                null, new ConfigurationManagerAttributes
-                {
-                    IsAdvanced = true
-                }));
-
-            _logger.LogEvent += logFowarding;
-
             // Patching
-            var harmony = new Harmony(Guid);
-            harmony.PatchAll();
-
-            ModdingUtils.Initialize(this, Logger, "HolloFoxes'");
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        private void logFowarding(object o, LogEventArgs e)
-        {
-            if (useSentry != logToSentry.Enabled) return;
-            switch (e.Level)
+            try
             {
-                case BepInEx.Logging.LogLevel.Fatal:
-                    SentrySdk.CaptureMessage(e.Data.ToString(), _scope, SentryLevel.Fatal);
-                    break;
-                case BepInEx.Logging.LogLevel.Error:
-                    SentrySdk.CaptureMessage(e.Data.ToString(), _scope, SentryLevel.Error);
-                    break;
+                var harmony = new Harmony(Guid);
+                harmony.PatchAll();
+
+                ModdingUtils.AddPluginToMenuList(this, "HolloFoxes'");
+                SceneManager.sceneLoaded += OnSceneLoaded;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
             }
         }
 

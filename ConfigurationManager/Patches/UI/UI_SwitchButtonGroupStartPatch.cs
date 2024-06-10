@@ -48,7 +48,7 @@ namespace ConfigurationManager.Patches.UI
             var rot = clone.transform.rotation;
             clone.transform.SetPositionAndRotation(newPost, rot);
             clone.onClick.RemoveAllListeners();
-            clone.onClick.AddListener(() => { Utils.SentryInvoke(Click); });
+            clone.onClick.AddListener(() => { Click(); });
             var textOnHover = clone.gameObject.GetComponent<MouseTextOnHover>();
             textOnHover.mouseHoverText = "Plugin Configurations";
             clone.GetComponentsInChildren<Image>()[2].sprite =
@@ -147,9 +147,7 @@ namespace ConfigurationManager.Patches.UI
 
                     foreach (var entry in entries.Where(e => e.Definition.Section == section))
                     {
-                        if (ConfigurationManager.LogLevel == ModdingUtils.LogLevel.All)
-                            ConfigurationManager._logger.LogInfo(
-                                $"{entry.Definition.Section}:{entry.Definition.Key}:{entry.BoxedValue}");
+                        ConfigurationManager._logger.LogInfo($"{entry.Definition.Section}:{entry.Definition.Key}:{entry.BoxedValue}");
 
                         if (entry.BoxedValue is KeyboardShortcut || entry.BoxedValue is KeyCode)
                         {

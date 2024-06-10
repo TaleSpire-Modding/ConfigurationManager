@@ -6,7 +6,6 @@ using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Configuration;
 using ConfigurationManager.Utilities;
-using ModdingTales;
 
 namespace ConfigurationManager
 {
@@ -26,8 +25,7 @@ namespace ConfigurationManager
             catch (Exception ex)
             {
                 results = Enumerable.Empty<ConfigEntryBase>();
-                if (ConfigurationManager.LogLevel != ModdingUtils.LogLevel.None)
-                    ConfigurationManager._logger.LogError(ex);
+                ConfigurationManager._logger.LogError(ex);
             }
 
             plugins = Utils.FindPlugins();
@@ -46,17 +44,10 @@ namespace ConfigurationManager
 
             var coreConfig = (ConfigFile)coreConfigProp.GetValue(null, null);
 
-            switch (ConfigurationManager.LogLevel)
-            {
-                case ModdingUtils.LogLevel.All:
-                {
-                    var bepinMeta = new BepInPlugin("BepInEx", "BepInEx",
+            var bepinMeta = new BepInPlugin("BepInEx", "BepInEx",
                         typeof(Chainloader).Assembly.GetName().Version.ToString());
-                    ConfigurationManager._logger.LogInfo(bepinMeta);
-                    break;
-                }
-            }
-
+            ConfigurationManager._logger.LogInfo(bepinMeta);
+            
             return coreConfig.ToArray().Select(c => c.Value);
         }
 
@@ -65,8 +56,7 @@ namespace ConfigurationManager
         /// </summary>
         internal static IEnumerable<ConfigEntryBase> GetPluginConfig(BaseUnityPlugin plugin)
         {
-            if (ConfigurationManager.LogLevel != ModdingUtils.LogLevel.None)
-                ConfigurationManager._logger.LogInfo(plugin);
+            ConfigurationManager._logger.LogInfo(plugin);
             return plugin.Config.ToArray().Select(c => c.Value);
         }
     }

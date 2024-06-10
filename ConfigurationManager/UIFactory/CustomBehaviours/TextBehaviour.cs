@@ -1,7 +1,5 @@
 ﻿using BepInEx.Configuration;
-using ConfigurationManager.Utilities;
 using LordAshes;
-using ModdingTales;
 using SRF;
 using TMPro;
 using UnityEngine;
@@ -19,7 +17,14 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
         private void Awake()
         {
-            Utils.SentryInvoke(Setup);
+            try
+            {
+                Setup();
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex);
+            }
         }
 
         private void Update()
@@ -58,42 +63,33 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                 button.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() =>
                 {
-                    Utils.SentryInvoke(() =>
+                    SystemMessage.ClosePendingMessage();
+                    ConfigEditorPlugin.Subscribe((s1, s2) =>
                     {
-                        SystemMessage.ClosePendingMessage();
-                        ConfigEditorPlugin.Subscribe((s1, s2) =>
-                        {
-                            Utils.SentryInvoke(() =>
-                            {
-                                EditorCallback(s1, s2);
-                            });
-
-                            // Not covered by Config Manager's Sentry
-                            Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
-                        });
-                        ConfigEditorPlugin.offsetXToEntry = 120;
-                        ConfigEditorPlugin.Open(Entry.Definition.Key, (string)Entry.BoxedValue,
-                            new[] { "Cancel", "Save" });
+                        EditorCallback(s1, s2);
+                        
+                        // Not covered by Config Manager's Sentry
+                        Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
                     });
+                    ConfigEditorPlugin.offsetXToEntry = 120;
+                    ConfigEditorPlugin.Open(Entry.Definition.Key, (string)Entry.BoxedValue,
+                        new[] { "Cancel", "Save" });
                 });
             }
             else
             {
                 button.onClick.AddListener(() =>
                 {
-                    Utils.SentryInvoke(() =>
-                    {
-                        SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired text",
-                            "OK",
-                            t =>
-                            {
-                                Utils.SentryInvoke(() => { Save(t); });
+                    SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired text",
+                        "OK",
+                        t =>
+                        {
+                            Save(t); 
 
-                                // Not covered by Config Manager's Sentry
-                                Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
-                            },
-                            null, "Cancel", null, Entry.BoxedValue.ToString());
-                    });
+                            // Not covered by Config Manager's Sentry
+                            Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
+                        },
+                        null, "Cancel", null, Entry.BoxedValue.ToString());
                 });
             }
         }
@@ -110,22 +106,19 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
                     ConfigEditorPlugin.Close();
                     break;
                 default:
-                    if (LogLevel >= ModdingUtils.LogLevel.Low)
-                        _logger.LogInfo($"Editor Callback for {Entry.Definition.Key} had a button with wrong text.");
+                    _logger.LogInfo($"Editor Callback for {Entry.Definition.Key} had a button with wrong text.");
                     break;
             }
         }
 
         private void Save(string t)
         {
-            if (LogLevel >= ModdingUtils.LogLevel.High)
-                _logger.LogInfo($"{Entry.Definition.Key} started updating");
+            _logger.LogInfo($"{Entry.Definition.Key} started updating");
 
             Entry.BoxedValue = t;
             value.text = t;
-
-            if (LogLevel >= ModdingUtils.LogLevel.High)
-                _logger.LogInfo($"{Entry.Definition.Key} has been updated");
+            
+            _logger.LogInfo($"{Entry.Definition.Key} has been updated");
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using BepInEx.Configuration;
-using ConfigurationManager.Utilities;
-using ModdingTales;
 using SRF;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +13,14 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
         private void Awake()
         {
-            Utils.SentryInvoke(Setup);
+            try
+            {
+                Setup();
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex);
+            }
         }
 
         internal void Setup()
@@ -30,17 +35,12 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             toggleref.onValueChanged.RemoveAllListeners();
             toggleref.onValueChanged.AddListener(b =>
             {
-                Utils.SentryInvoke(() =>
-                {
-                    if (LogLevel >= ModdingUtils.LogLevel.High)
-                        _logger.LogInfo($"{Entry.Definition.Key} started updating");
+                    _logger.LogInfo($"{Entry.Definition.Key} started updating");
 
                     Entry.BoxedValue = b;
                     Attributes?.CallbackAction?.Invoke(b);
 
-                    if (LogLevel >= ModdingUtils.LogLevel.High)
-                        _logger.LogInfo($"{Entry.Definition.Key} has been updated");
-                });
+                    _logger.LogInfo($"{Entry.Definition.Key} has been updated");
             });
             toggleref.isOn = (bool)Entry.BoxedValue;
 

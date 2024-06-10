@@ -1,9 +1,9 @@
 ﻿using BepInEx.Configuration;
-using ConfigurationManager.Utilities;
 using SRF;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static ConfigurationManager.ConfigurationManager;
 
 namespace ConfigurationManager.UIFactory.CustomBehaviours
 {
@@ -14,7 +14,14 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
         private void Awake()
         {
-            Utils.SentryInvoke(Setup);
+            try
+            {
+                Setup();
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex);
+            }
         }
 
         internal void Setup()

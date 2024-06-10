@@ -19,7 +19,14 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
         private void Awake()
         {
-            Utils.SentryInvoke(Setup);
+            try
+            {
+                Setup();
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex);
+            }
         }
 
         private void Update()
@@ -48,90 +55,82 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() =>
             {
-                Utils.SentryInvoke(() =>
-                {
-                    SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired number",
-                        "OK",
-                        t =>
+                SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired number",
+                    "OK",
+                    t =>
                         {
-                            Utils.SentryInvoke(() =>
+                            var typeDict = new Dictionary<Type, int>
                             {
-                                var typeDict = new Dictionary<Type, int>
-                                {
-                                    { typeof(sbyte), 0 },
-                                    { typeof(byte), 1 },
-                                    { typeof(short), 2 },
-                                    { typeof(ushort), 3 },
-                                    { typeof(int), 4 },
-                                    { typeof(uint), 5 },
-                                    { typeof(long), 6 },
-                                    { typeof(ulong), 7 },
-                                    { typeof(float), 8 },
-                                    { typeof(double), 9 },
-                                    { typeof(decimal), 10 }
-                                };
+                                { typeof(sbyte), 0 },
+                                { typeof(byte), 1 },
+                                { typeof(short), 2 },
+                                { typeof(ushort), 3 },
+                                { typeof(int), 4 },
+                                { typeof(uint), 5 },
+                                { typeof(long), 6 },
+                                { typeof(ulong), 7 },
+                                { typeof(float), 8 },
+                                { typeof(double), 9 },
+                                { typeof(decimal), 10 }
+                            };
 
-                                if (LogLevel >= ModdingUtils.LogLevel.High)
-                                    _logger.LogInfo($"{Entry.Definition.Key} started updating");
+                            _logger.LogInfo($"{Entry.Definition.Key} started updating");
 
-                                switch (typeDict[Entry.BoxedValue.GetType()])
-                                {
-                                    case 0:
-                                        if (sbyte.TryParse(t, out var s))
-                                            Entry.BoxedValue = s;
-                                        break;
-                                    case 1:
-                                        if (byte.TryParse(t, out var b))
-                                            Entry.BoxedValue = b;
-                                        break;
-                                    case 2:
-                                        if (short.TryParse(t, out var sho))
-                                            Entry.BoxedValue = sho;
-                                        break;
-                                    case 3:
-                                        if (ushort.TryParse(t, out var usho))
-                                            Entry.BoxedValue = usho;
-                                        break;
-                                    case 4:
-                                        if (int.TryParse(t, out var i))
-                                            Entry.BoxedValue = i;
-                                        break;
-                                    case 5:
-                                        if (uint.TryParse(t, out var ui))
-                                            Entry.BoxedValue = ui;
-                                        break;
-                                    case 6:
-                                        if (long.TryParse(t, out var l))
-                                            Entry.BoxedValue = l;
-                                        break;
-                                    case 7:
-                                        if (ulong.TryParse(t, out var ul))
-                                            Entry.BoxedValue = ul;
-                                        break;
-                                    case 8:
-                                        if (float.TryParse(t, out var f))
-                                            Entry.BoxedValue = f;
-                                        break;
-                                    case 9:
-                                        if (double.TryParse(t, out var dou))
-                                            Entry.BoxedValue = dou;
-                                        break;
-                                    case 10:
-                                        if (decimal.TryParse(t, out var dec))
-                                            Entry.BoxedValue = dec;
-                                        break;
-                                }
+                            switch (typeDict[Entry.BoxedValue.GetType()])
+                            {
+                                case 0:
+                                    if (sbyte.TryParse(t, out var s))
+                                        Entry.BoxedValue = s;
+                                    break;
+                                case 1:
+                                    if (byte.TryParse(t, out var b))
+                                        Entry.BoxedValue = b;
+                                    break;
+                                case 2:
+                                    if (short.TryParse(t, out var sho))
+                                        Entry.BoxedValue = sho;
+                                    break;
+                                case 3:
+                                    if (ushort.TryParse(t, out var usho))
+                                        Entry.BoxedValue = usho;
+                                    break;
+                                case 4:
+                                    if (int.TryParse(t, out var i))
+                                        Entry.BoxedValue = i;
+                                    break;
+                                case 5:
+                                    if (uint.TryParse(t, out var ui))
+                                        Entry.BoxedValue = ui;
+                                    break;
+                                case 6:
+                                    if (long.TryParse(t, out var l))
+                                        Entry.BoxedValue = l;
+                                    break;
+                                case 7:
+                                    if (ulong.TryParse(t, out var ul))
+                                        Entry.BoxedValue = ul;
+                                    break;
+                                case 8:
+                                    if (float.TryParse(t, out var f))
+                                        Entry.BoxedValue = f;
+                                    break;
+                                case 9:
+                                    if (double.TryParse(t, out var dou))
+                                        Entry.BoxedValue = dou;
+                                    break;
+                                case 10:
+                                    if (decimal.TryParse(t, out var dec))
+                                        Entry.BoxedValue = dec;
+                                    break;
+                            }
 
-                                value.text = Entry.BoxedValue.ToString();
+                            value.text = Entry.BoxedValue.ToString();
 
-                                if (LogLevel >= ModdingUtils.LogLevel.High)
-                                    _logger.LogInfo($"{Entry.Definition.Key} has been updated");
-                            });
+                            _logger.LogInfo($"{Entry.Definition.Key} has been updated");
 
                             // Not covered by Config Manager's Sentry
                             Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
-                        }, null, "Cancel", null, Entry.BoxedValue.ToString());
-                });
+                        }, null, "Cancel", null, Entry.BoxedValue.ToString());   
             });
         }
     }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
-using ConfigurationManager.Utilities;
-using ModdingTales;
 using SRF;
 using TMPro;
 using UnityEngine;
@@ -17,7 +15,14 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
         private void Awake()
         {
-            Utils.SentryInvoke(Setup);
+            try
+            {
+                Setup();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex);
+            }
         }
 
         internal void Setup()
@@ -44,17 +49,12 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
             tmp_dropdown.onValueChanged.RemoveAllListeners();
             tmp_dropdown.onValueChanged.AddListener(i =>
             {
-                Utils.SentryInvoke(() =>
-                {
-                    if (LogLevel >= ModdingUtils.LogLevel.High)
-                        _logger.LogInfo($"{Entry.Definition.Key} started updating");
+                _logger.LogInfo($"{Entry.Definition.Key} started updating");
 
-                    Entry.BoxedValue = Enum.Parse(Entry.BoxedValue.GetType(), tmp_dropdown.options[i].text);
-                    Attributes?.CallbackAction?.Invoke(i);
+                Entry.BoxedValue = Enum.Parse(Entry.BoxedValue.GetType(), tmp_dropdown.options[i].text);
+                Attributes?.CallbackAction?.Invoke(i);
 
-                    if (LogLevel >= ModdingUtils.LogLevel.High)
-                        _logger.LogInfo($"{Entry.Definition.Key} has been updated");
-                });
+                _logger.LogInfo($"{Entry.Definition.Key} has been updated");   
             });
             tmp_dropdown.value = dropdownValue;
 
