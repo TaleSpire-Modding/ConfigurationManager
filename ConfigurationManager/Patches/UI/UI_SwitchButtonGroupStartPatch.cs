@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using ConfigurationManager.UIFactory.CustomBehaviours;
 using ConfigurationManager.Utilities;
-using LordAshes;
-using ModdingTales;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,6 +33,21 @@ namespace ConfigurationManager.Patches.UI
         private static Vector3 pos;
 
 
+        public static Sprite LoadEmbeddedTexture(string texturePath)
+        {
+            Assembly _assembly = Assembly.GetExecutingAssembly();
+            Stream _stream = _assembly.GetManifestResourceStream(typeof(ConfigurationManager).Namespace + "." + texturePath.Replace("/", "."));
+            byte[] fileData;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                _stream.CopyTo(ms);
+                fileData = ms.ToArray();
+            }
+            Texture2D tex = new Texture2D(1, 1);
+            tex.LoadImage(fileData);
+            return Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+        }
+
         private static void AddButton(UI_SwitchButtonGroup __instance, int i, Button template, string key,
             ref List<Button> ____buttons, float distance)
         {
@@ -51,8 +66,7 @@ namespace ConfigurationManager.Patches.UI
             clone.onClick.AddListener(() => { Click(); });
             var textOnHover = clone.gameObject.GetComponent<MouseTextOnHover>();
             textOnHover.mouseHoverText = "Plugin Configurations";
-            clone.GetComponentsInChildren<Image>()[2].sprite =
-                FileAccessPlugin.Image.LoadSprite("Images/Icons/plug.png");
+            clone.GetComponentsInChildren<Image>()[2].sprite = LoadEmbeddedTexture("Assets/plug.png");
 
             var scrollViewContent = template.transform.parent.parent.GetChild(0).GetChild(0).GetChild(0).GetChild(2);
             _sectionHeader = scrollViewContent.GetChild(2).GetChild(0).GetChild(0).gameObject;

@@ -6,10 +6,8 @@ using BepInEx;
 using BepInEx.Logging;
 using ConfigurationManager.Patches.GameSetting;
 using HarmonyLib;
-using LordAshes;
 using ModdingTales;
 using PluginUtilities;
-using Sentry;
 using UnityEngine.SceneManagement;
 
 namespace ConfigurationManager
@@ -19,19 +17,9 @@ namespace ConfigurationManager
     ///     any of the settings you expose, even keyboard shortcuts.
     /// </summary>
     [BepInPlugin(Guid, "Config Manager", Version)]
-    [BepInDependency(FileAccessPlugin.Guid)]
-    [BepInDependency(ConfigEditorPlugin.Guid)]
     [BepInDependency(SetInjectionFlag.Guid)]
     public sealed class ConfigurationManager : BaseUnityPlugin
     {
-        public enum logToSentry
-        {
-            Inherited,
-            Disabled,
-
-            // Prompt,
-            Enabled
-        }
 
         /// <summary>
         ///     GUID of this plugin
@@ -41,19 +29,10 @@ namespace ConfigurationManager
         /// <summary>
         ///     Version constant
         /// </summary>
-        public const string Version = "0.16.0.0";
+        public const string Version = "0.17.0.0";
 
         internal static ManualLogSource _logger;
         internal static ConfigurationManager _instance;
-        
-        internal static Action<Scope> _scope = scope =>
-        {
-            scope.User = new User
-            {
-                Username = UserNameManager.Username,
-            };
-            scope.Release = Version;
-        };
 
         /// <inheritdoc />
         public ConfigurationManager()

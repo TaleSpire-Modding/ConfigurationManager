@@ -1,5 +1,4 @@
 ﻿using BepInEx.Configuration;
-using LordAshes;
 using SRF;
 using TMPro;
 using UnityEngine;
@@ -34,8 +33,6 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
         private void OnGUI()
         {
-            // Render Config Editor if open
-            ConfigEditorPlugin.Render();
         }
 
         internal void Setup()
@@ -57,58 +54,19 @@ namespace ConfigurationManager.UIFactory.CustomBehaviours
 
             var button = transform.GetChild(1).GetChild(1).GetComponent<Button>();
             button.onClick.RemoveAllListeners();
-
-            if (Attributes?.IsJSON != null && Attributes.IsJSON.Value)
+            button.onClick.AddListener(() =>
             {
-                button.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() =>
-                {
-                    SystemMessage.ClosePendingMessage();
-                    ConfigEditorPlugin.Subscribe((s1, s2) =>
+                SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired text",
+                    "OK",
+                    t =>
                     {
-                        EditorCallback(s1, s2);
-                        
+                        Save(t); 
+
                         // Not covered by Config Manager's Sentry
                         Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
-                    });
-                    ConfigEditorPlugin.offsetXToEntry = 120;
-                    ConfigEditorPlugin.Open(Entry.Definition.Key, (string)Entry.BoxedValue,
-                        new[] { "Cancel", "Save" });
-                });
-            }
-            else
-            {
-                button.onClick.AddListener(() =>
-                {
-                    SystemMessage.AskForTextInput($"Update {Entry.Definition.Key} Config", "Enter the desired text",
-                        "OK",
-                        t =>
-                        {
-                            Save(t); 
-
-                            // Not covered by Config Manager's Sentry
-                            Attributes?.CallbackAction?.Invoke(Entry.BoxedValue);
-                        },
-                        null, "Cancel", null, Entry.BoxedValue.ToString());
-                });
-            }
-        }
-
-        private void EditorCallback(string button, string json)
-        {
-            switch (button)
-            {
-                case "Save":
-                    Save(json);
-                    ConfigEditorPlugin.Close();
-                    break;
-                case "Cancel":
-                    ConfigEditorPlugin.Close();
-                    break;
-                default:
-                    _logger.LogInfo($"Editor Callback for {Entry.Definition.Key} had a button with wrong text.");
-                    break;
-            }
+                    },
+                    null, "Cancel", null, Entry.BoxedValue.ToString());
+            });
         }
 
         private void Save(string t)

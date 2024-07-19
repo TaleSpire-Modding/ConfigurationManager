@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using BepInEx.Configuration;
-using ConfigurationManager.Utilities;
-using ModdingTales;
 using SRF;
 using TMPro;
 using UnityEngine;

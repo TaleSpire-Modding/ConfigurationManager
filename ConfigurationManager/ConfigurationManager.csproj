@@ -30,16 +30,15 @@
   <ItemGroup>
     <PackageReference Include="TaleSpire" Version="1.2.2"></PackageReference>
     <PackageReference Include="Talespire.BepInEx" Version="5.4.22"></PackageReference>
-    <PackageReference Include="TaleSpire.Sentry" Version="1.0.0" />
     <PackageReference Include="TaleSpire.SetInjectionFlagPlugin" Version="2.6.0" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="ConfigEditorPlugin">
-      <HintPath>C:\Users\ujkkj\AppData\Roaming\r2modmanPlus-local\TaleSpire\profiles\CMPDev\BepInEx\plugins\LordAshes-ConfigEditor\ConfigEditorPlugin.dll</HintPath>
-    </Reference>
-    <Reference Include="FileAccessPlugin">
-      <HintPath>C:\Users\ujkkj\AppData\Roaming\r2modmanPlus-local\TaleSpire\profiles\CMPDev\BepInEx\plugins\LordAshes-FileAccessPlugin\FileAccessPlugin.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Assets\plug.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\plug.png" />
   </ItemGroup>
 </Project>
